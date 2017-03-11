@@ -640,7 +640,7 @@
 									typeof parameters.date ? delete parameters.date : "";
 
 									if(typeof parameters.tag != "undefined"){
-                                        path = parameters.tag + "/" + (date[date.length - 1].value - 1);
+                                        path = "/" + parameters.tag + "/" + (date[date.length - 1].value - 1);
 									}else{
 										path = forum.fn.prettyDate(date[date.length - 1].value);
                                     }

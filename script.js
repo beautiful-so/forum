@@ -391,11 +391,10 @@
 							date = dom.getElementsByName("date");
 							typeof parameters.date ? delete parameters.date : "";
 
-							if(typeof parameters.tag != "undefined"){
+							if(parameters.tag)								
                                 path = "/" + parameters.tag + "/" + (date[date.length - 1].value - 1);
-							}else{
+							else
 								path = forum.fn.prettyDate(date[date.length - 1].value);
-                            }
 						date ? forum.fn.path(path) : "";
 						forum.init.scroll(0);
 						forum.fn.loading(1);

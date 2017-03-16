@@ -119,6 +119,7 @@
 				forum.init.scroll(0);
 			},
 			threads : function(tag) {
+				tag = tag.replace("_", " ");
 				forum.element.shortcut.innerHTML = "";
 				forum.element.thread.innerHTML = "";
 				forum.element.keyword = tag;
@@ -146,7 +147,7 @@
 				forum.fn.jsonp(forum.api.thread(parameters.tag, parameters.id));
 			},
 			threads : function(parameters) {
-				var tag = parameters.tag.replace("_", " "),
+				var tag = parameters.tag,
 					tag = decodeURIComponent(tag),
 					parametersUser = typeof parameters.user != "undefined",
 					parametersDate = typeof parameters.date == "undefined",

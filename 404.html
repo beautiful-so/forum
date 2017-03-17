@@ -47,15 +47,21 @@
 		<div id="jsonp"></div>
 		<script>
 			(function(dom) {
-				if(typeof localStorage.code != "undefined"){
-					var script = dom.createElement("script");
-					script.charset = "utf-8";
-					script.text = localStorage.code;
-					dom.body.appendChild(script);
+				if(typeof String.raw != "undefined"){
+					if(typeof localStorage.code != "undefined"){
+						var script = dom.createElement("script");
+						script.charset = "utf-8";
+						script.text = localStorage.code;
+						dom.body.appendChild(script);
+					}else{
+						var script = dom.createElement("script");
+							script.src = "/es6.js";
+							dom.body.appendChild(script);
+					}
 				}else{
 					var script = dom.createElement("script");
-					script.src = "/script.js";
-					dom.body.appendChild(script);
+						script.src = "/es5.js";
+						dom.body.appendChild(script);
 				}
 			})(document);
 		</script>

@@ -1,37 +1,38 @@
-(function(bom, dom) {
+localStorage.code = `((bom, dom) => {
 	bom.forum = {
 		api : {
 			lang : "",
 			popstate : typeof bom.onpopstate != "undefined",
 			restUrl : "https://fora.firebaseio.com/",
-			autocomplete : function(keyword) {
+			autocomplete : (keyword) => {
 				return "http://" + forum.api.lang + ".wikipedia.org/w/api.php?action=opensearch&limit=10&format=json&utf8=1&callback=forum.callback.autocomplete&search=" + keyword;
 			},
-			game : function(type, date) {
+			game : (type, date) => {
 				return "https://spreadsheets.google.com/feeds/list/1-JVlP9YIwC2DydGZvAtOSmRE-BhN32IRK8g6AfchcQU/" + type + "/public/basic?alt=json-in-script&sq=date=" + date + "&callback=forum.callback.game";
 			},
-			news : function() {
+			news : () => {
 				return "https://" + forum.api.lang + ".wikinews.org/w/api.php?action=query&format=json&list=recentchanges&redirects=1&utf8=1&rcdir=newer&rcnamespace=0&rclimit=100&callback=forum.callback.news";
 			},
-			infobox : function(tag) {
+			infobox : (tag) => {
 				return "http://" + forum.api.lang + ".dbpedia.org/sparql?default-graph-uri=http://" + forum.api.lang + ".dbpedia.org&query=select distinct * where { <http://" + forum.api.lang + ".dbpedia.org/resource/" + tag.replace(/%20/gi, "_") + "> ?k ?o . }&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on&callback=forum.callback.infobox";
 			},
-			thread : function(tag, id) {
+			thread : (tag, id) => {
 				return forum.api.restUrl + tag + "/" + id + ".json?callback=forum.callback.thread";
 			},
-			threads : function(tag, date, user) {
+			threads : (tag, date, user) => {
 				var parameter = "";
-				if(typeof user != "undefined")
-					parameter = "orderBy='email'&equalTo='" + user + "'&limitToLast=50";
-				else
-					parameter = (date ? "endAt=" + date + "&" : "") + "orderBy='date'&limitToLast=10";
+				if(typeof user != "undefined"){
+					parameter = "orderBy=\\"email\\"&equalTo=\\"" + user + "\\"&limitToLast=50";
+				}else{
+					parameter = (date ? "endAt=" + date + "&" : "") + "orderBy=\\"date\\"&limitToLast=10";
+				}
 				return forum.api.restUrl + tag + ".json?" + parameter + "&callback=forum.callback.threads";
 			},
-			root : function(tag, root) {
+			root : (tag, root) => {
 				return forum.api.restUrl + tag + "/" + root + ".json/?callback=forum.callback.thread";
 			},
-			branch : function(tag, root, date) {
-				return forum.api.restUrl + tag + ".json?equalTo='" + root + "'&orderBy='root'&callback=forum.callback.thread";
+			branch : (tag, root, date) => {
+				return forum.api.restUrl + tag + ".json?equalTo='" + root + "\\"&orderBy=\\"root\\"callback=forum.callback.thread";
 			},
 			regex : {
 				url : /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi,
@@ -57,16 +58,16 @@
 			infobox : dom.getElementById("infobox")
 		},
 		init : {
-			sesstion : function() {
+			sesstion : () => {
 				var script = dom.createElement("script");
 				script.src = "//www.gstatic.com/firebasejs/live/3.0/firebase.js";
-				script.onload = function() {
+				script.onload = () => {
 					var config = {
 						apiKey: "AIzaSyBi0JE_HRNznjb_43Bcv5xoBHuZEaCT07M",
 						authDomain: "fora.firebaseapp.com"
 					};
 					firebase.initializeApp(config);
-					firebase.auth().onAuthStateChanged(function(user) {
+					firebase.auth().onAuthStateChanged((user) => {
 						if (user) {
 							var key = bom.localStorage.key(0);
 							bom.localStorage.api = user.Xc;
@@ -85,10 +86,10 @@
 				};
 				forum.element.jsonp.appendChild(script);
 			},
-			scroll : function(bool) {
-				bool ? bom.onscroll = function() {bom.forum.fn.scroll()} : bom.onscroll = null;
+			scroll : (bool) => {
+				bool ? bom.onscroll = () => {bom.forum.fn.scroll()} : bom.onscroll = null;
 			},
-			route : function() {
+			route : () => {
 				var parameters = bom.location.pathname,
 					parameters = parameters ? forum.fn.location(parameters) : "";
 
@@ -102,14 +103,14 @@
 					forum.route.home(parameters);
 				}
 			},
-			home : function() {
+			home : () => {
 				dom.body.removeAttribute("class");
 				dom.title = "forum.red";
 				forum.element.thread.innerHTML = "";
 				forum.element.threads.innerHTML = "";
 				forum.element.tag.textContent = "";
 			},
-			thread : function(tag) {
+			thread : (tag) => {
 				var v = tag.replace("_", " ");
 				v = decodeURIComponent(v);
 				dom.title = v;
@@ -118,7 +119,7 @@
 				forum.element.thread.innerHTML = "";
 				forum.init.scroll(0);
 			},
-			threads : function(tag) {
+			threads : (tag) => {
 				tag = tag.replace("_", " ");
 				forum.element.shortcut.innerHTML = "";
 				forum.element.thread.innerHTML = "";
@@ -127,10 +128,10 @@
 				forum.element.tag.textContent = tag;
 				dom.body.className = "threads";
 			},
-			lang : function(json) {forum.lang = json}
+			lang : (json) => {forum.lang = json}
 		},
 		route : {
-			home : function(parameters) {
+			home : (parameters) => {
 				!forum.element.news.innerHTML.length ? forum.init.scroll(0) : "";
 				forum.init.home();
 				if(typeof bom.onscroll == "function"){
@@ -142,24 +143,25 @@
 					forum.fn.games(parameters);
 				}
 			},
-			thread : function(parameters) {
+			thread : (parameters) => {
 				forum.init.thread(parameters.tag);
 				forum.fn.jsonp(forum.api.thread(parameters.tag, parameters.id));
 			},
-			threads : function(parameters) {
+			threads : (parameters) => {
 				var tag = parameters.tag,
 					tag = decodeURIComponent(tag),
 					parametersUser = typeof parameters.user != "undefined",
 					parametersDate = typeof parameters.date == "undefined",
 					el = forum.element.threads,
 					threadsLen = el.innerHTML.length,
-					getDate = function() {
+					getDate = () => {
 						var date = dom.getElementsByName("date");
 							date = date.length ? date[date.length-1].value*1 : forum.fn.jsonp(forum.api.threads(tag, parameters.date));
-							if(date == ((parameters.date*1)+1))
+							if(date == ((parameters.date*1)+1)){
 								forum.fn.jsonp(forum.api.threads(tag, parameters.date));
-							else if(!dom.getElementById("thread_none"))
+							}else if(!dom.getElementById("thread_none")){
 								forum.init.scroll(1);
+							}
 					};
 				if(dom.title != tag || forum.element.infobox.innerHTML.length == 0 || (dom.body.className.indexOf("user") > 0 && !parametersUser)){
 					forum.fn.jsonp(forum.api.infobox(tag));
@@ -168,9 +170,9 @@
 				forum.init.threads(tag);
 				!threadsLen || parametersUser ? forum.init.scroll(0) : "";
 
-				if(typeof bom.onscroll == "function")
+				if(typeof bom.onscroll == "function"){
 					getDate();
-				else
+				}else{
 					if(parametersUser){
 						dom.body.className += " user";
 						forum.fn.jsonp(forum.api.threads(tag, null, parameters.user));
@@ -181,10 +183,11 @@
 					}else{
 						getDate();
 					}
+				}
 			}
 		},
 		fn : {
-			location : function(parameters) {
+			location : (parameters) => {
                 var path = {},
                     p = parameters.substr(1).split("/");
 
@@ -196,12 +199,13 @@
                             if(i == 0){
                                 path.tag = p[i];
                             }else{
-                                if(p[i].length == 8 && typeof eval(p[i]) === "number")
+                                if(p[i].length == 8 && typeof eval(p[i]) === "number"){
                                     path.date = p[1]*1;
-                                else if(p[i].match(forum.api.regex.email))
+                                }else if(p[i].match(forum.api.regex.email)){
                                     path.email = p[i];
-                                else
+                                }else{
                                     path.id = p[i];
+								}
                             }
                         }
                     } catch (error) {
@@ -210,7 +214,7 @@
                 }
 				return path;
 			},
-			prettyDate : function(date) {
+			prettyDate : (date) => {
 				console.log(date);
 				var d = [];
 					d.push(date.substr(0, 4));
@@ -221,46 +225,47 @@
 					d = new Date(d).toISOString().substr(0,10).replace(/-/gi,"");
 				return d;
 			},
-			games : function(parameters) {
+			games : (parameters) => {
 				var date = typeof parameters.date != "undefined" ? parameters.date : new Date(new Date().getTime() - 86400000).toISOString().substr(0,10).replace(/-/gi,"");
 				forum.fn.jsonp(forum.api.game(1, date));
 				forum.fn.jsonp(forum.api.game(2, date));
 				forum.fn.jsonp(forum.api.game(3, date));
 			},
-			path : function(path, event) {
+			path : (path, event) => {
 				typeof event != "undefined" ? event.preventDefault() : "";
 				typeof path != "string" ? path = path.href : "";
 				if(forum.api.popstate){
-					history.pushState('', 'PushState - 1', path);
+					history.pushState("", "PushState - 1", path);
 					forum.init.route();
 				}else{
 					bom.location.href = path;
 				}
 			},
-			notFound : function(el, index) {
+			notFound : (el, index) => {
 				var elm = dom.getElementById(el.name+"_"+index);
 					elm.parentNode.removeChild(elm);
 				if(el.name == "infobox_image")
 					dom.getElementsByName(el.name)[0].checked = true;
 			},
-			clear : function(){
+			clear : () => {
 				forum.element.jsonp.innerHTML = "";
 			},
-			jsonp : function(url, callback) {
+			jsonp : (url, callback) => {
 				var script = dom.createElement("script");
 				script.src = url;
 				script.onload = "forum.fn.clear()";
 				forum.element.jsonp.appendChild(script);
 			},
-			ajax : function(url, method, data, type) {
+			ajax : (url, method, data, type) => {
 				var xhr = bom.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-				xhr.onreadystatechange = function(e) {
+				xhr.onreadystatechange = (e) => {
 					if (e.target.readyState == 4 && e.target.status == 200){
 						var json = eval("("+e.target.responseText+")");
-						if(typeof type == "function")
+						if(typeof type == "function"){
 							type(json);
-						else
+						}else{
 							forum.callback[type](json);
+						}
 						return;
 					}else{
 						console.log(e);
@@ -269,7 +274,7 @@
 				xhr.open(method, url, true);
 				data ? xhr.send(data) : xhr.send();
 			},
-			oembed : function(el) {
+			oembed : (el) => {
 				var url = typeof el.value != "undefined" ? el.value.match(forum.api.regex.url) : el.textContent.match(forum.api.regex.url);
 				if(url){
 					for(var i = 0, len = url.length; i < len; i++){
@@ -313,15 +318,15 @@
 					radio.dataset.request = "";
 				}
 			},
-			keywordFocus : function(e) {
+			keywordFocus : (e) => {
 				var area = !(dom.getElementById("shortcut").textContent.length > 0),
-					keywords = dom.getElementsByName('keyword'),
+					keywords = dom.getElementsByName("keyword"),
 					keyword = forum.element.tag.textContent,
 					len = keywords.length,
-					autocomplete = function() {
+					autocomplete = () => {
 						len > 0 || area ? forum.fn.jsonp(forum.api.autocomplete(keyword)) : "";
 					},
-					submit = function() {
+					submit = () => {
 						var checked = dom.querySelector("input[name='keyword']:checked"),
 							check = checked ? checked.value : 0,
 							v = forum.element.tag.textContent;
@@ -373,7 +378,7 @@
 						break;
 				}
 			},
-			scroll : function(v) {
+			scroll : (v) => {
 				var limit = dom.body.scrollHeight - dom.documentElement.clientHeight,
 					top = dom.body.scrollTop || dom.documentElement.scrollTop;
 				if(top >= limit){
@@ -382,16 +387,17 @@
 						date = dom.getElementsByName("date");
 						typeof parameters.date ? delete parameters.date : "";
 
-						if(parameters.tag)
+						if(parameters.tag){
 							path = "/" + parameters.tag + "/" + (date[date.length - 1].value - 1);
-						else
+						}else{
 							path = forum.fn.prettyDate(date[date.length - 1].value);
+						}
 					date ? forum.fn.path(path) : "";
 					forum.init.scroll(0);
 					forum.fn.loading(1);
 				}
 			},
-			util : function(keyword) {
+			util : (keyword) => {
 				var checked = forum.element.switch.checked;
 
 				if(keyword != undefined){
@@ -406,10 +412,10 @@
 					forum.fn.post(forum.element);
 				}
 			},
-			close : function() {
+			close : () => {
 				dom.querySelector("[name='switch']:checked").checked = false;
 			},
-			modify : function(id){
+			modify : (id) => {
 				var el = dom.getElementById("switch"+id),
 					reply = dom.getElementById("reply"+id),
 					content = dom.querySelector("[for='switch"+id+"']").textContent;
@@ -422,29 +428,29 @@
 					reply.focus();
 				}
 			},
-			reply : function(event, el, id) {
+			reply : (event, el, id) => {
 				if(event.which == 13){
 					var content = el.textContent,
 						path = typeof forum.element.tag.textContent != "undefined" ? forum.element.tag.textContent : "",
 						el = dom.querySelector("[name='switch']:checked");
 					forum.rest.post(content, path, id);
 
-					setTimeout(function(){ el.innerHTML = "" }, 0);
+					setTimeout(() => { el.innerHTML = "" }, 0);
 				}
 			},
-			post : function(el) {
+			post : (el) => {
 				var content = el.form.content.value;
 				var path = typeof el.tag.textContent != "undefined" ? el.tag.textContent : "";
 				forum.rest.post(content, path);
 			},
-			nav : function(type) {
+			nav : (type) => {
 				if(type){
 					type == "Google" ? forum.fn.jsonp("https://apis.google.com/js/platform.js") : "";
 					var provider = new firebase.auth[type+"AuthProvider"]();
-					firebase.auth().signInWithRedirect(provider).then(function(result) {
+					firebase.auth().signInWithRedirect(provider).then((result) => {
 						var	token = result.credential.accessToken,
 							user = result.user;
-					}).catch(function(error) {
+					}).catch((error) => {
 						var errorCode = error.code,
 							errorMessage = error.message,
 							email = error.email,
@@ -455,7 +461,7 @@
 					bom.location.href = "/";
 				}
 			},
-			dateFormat : function(time) {
+			dateFormat : (time) => {
 				var today = new Date().toISOString().substr(0,10).replace(/-/gi,""),
 					diff = (((new Date()).getTime() - time) / 1000);
 				diff = diff - 33000;
@@ -473,16 +479,16 @@
 					day_diff < 31 && Math.floor( day_diff / 7 ) + "weeks" ||
 					today
 			},
-			rid : function() {
+			rid : () => {
 				return Math.random().toString(36).substring(20);
 			},
-			loading : function(v, type) {
+			loading : (v, type) => {
 				var dom_body = dom.body;
 				v ? dom_body.className += " loading" : dom_body.className = dom_body.className.replace(" loading", "");
 			}
 		},
 		rest : {
-			post : function(content, path, id) {
+			post : (content, path, id) => {
 				if(!forum.api.auth){
 					alert(forum.lang.validation.login);
 				}else if(!content.length){
@@ -524,17 +530,17 @@
 					forum.fn.ajax(path, type, data, "firebase");
 				}
 			},
-			delete : function(tag, id) {
+			delete : (tag, id) => {
 				var bool = confirm(forum.lang.validation.delete);
 				forum.callback.delete.id = id;
 				bool ? forum.fn.ajax(forum.api.restUrl + tag + "/" + id + ".json?auth=" + forum.api.auth, "DELETE", "", "delete") : "";
 			}
 		},
 		oembed : {
-			youtube : function(id) {
+			youtube : (id) => {
 				dom.getElementById("media"+id).innerHTML += "<iframe src='https://www.youtube.com/embed/" + id + "?autoplay=1' frameborder='0'></iframe>";
 			},
-			default : function(id, url) {
+			default : (id, url) => {
 				var el = dom.getElementById("media"+id);
 				if(url.indexOf("gist.github.com") >= 0){
 					forum.callback.gist.id = id;
@@ -549,36 +555,37 @@
 			}
 		},
 		template : {
-			autocomplete : function(keyword, json, num) {
+			autocomplete : (keyword, json, num) => {
 				var v = json[1][num].replace(keyword, "<span>" + keyword + "</span>");
 				return "<input onkeydown='forum.fn.keywordFocus(event)' id='keyword" + num + "' type='radio' name='keyword' value='" + json[1][num].replace(/%20/gi, "_") + "'><label for='keyword" + num + "'><a href='/" + json[1][num] + "' onclick='forum.fn.path(this)'>" + v + "</a></label>";
 			},
-			youtube : function(id) {
+			youtube : (id) => {
 				return "<a class='media' id='media" + id + "' onclick='window.forum.oembed.youtube('" + id + "')'><img src='https://i.ytimg.com/vi/" + id + "/hqdefault.jpg' alt='youtube'></a>";
 			},
-			oembed : function(url, img, key) {
+			oembed : (url, img, key) => {
 				var id = forum.fn.rid();
 				return "<a class='media " + key + "' id='media" + id + "'><img src='" + img + "' alt='' onclick='window.forum.oembed.default('" + id + "', '" + url + "')'></a>";
 			},
-			news : function(pageid, title) {
+			news : (pageid, title) => {
 				return "<li name='news'><a href='https://" + forum.api.lang + ".wikinews.org/wiki/" + title + "?dpl_id=" + pageid + "' target='_blank' title='new window'>" + title + "</a></li>";
 			},
-			game : function(category, game, league, home, home_score, home_country, away, away_score, away_country, date, youtube, win, img) {
+			game : (category, game, league, home, home_score, home_country, away, away_score, away_country, date, youtube, win, img) => {
 				var type = 0,
 					attr = typeof youtube != "undefined" ? "href='https://www.youtube.com/watch?v=" + youtube + "' target='_blank' title='new window'" : "";
-				if(category == 1)
+				if(category == 1){
 					type = "football";
-				else if(category == 2)
+				}else if(category == 2){
 					type = "basketball";
-				else if(category == 3)
+				}else if(category == 3){
 					type = "baseball";
+				}
 
 				return "<div name='game' class='game " + win + " " + league + " " + type + "' " + img + "><a " + attr + " class='title'><dl class='home'><dt><strong class='name'>" + home + "</strong><span class='country'>" + home_country + "</span></dt><dd class='score'>" + home_score + "</dd></dl><dl class='away'><dt><strong class='name'>" + away + "</strong><span class='country'>" + away_country + "</span></dt><dd class='score'>" + away_score + "</dd></dl></a><input type='hidden' name='date' value='" + date + "'></div>";
             },
-			infobox_image : function(key, value, num, checked) {
+			infobox_image : (key, value, num, checked) => {
 				return "<label id='infobox_image_" + num + "' for='infobox_img" + num + "'><input id='infobox_image" + num + "' type='radio' name='infobox_image' " + checked + "><img name='infobox_image' onerror='forum.fn.notFound(this, " + num + ")' src='http://commons.wikimedia.org/wiki/Special:Filepath/" + value + "' alt='" + key + "'></label>";
 			},
-			thread : function(prop, data, img) {
+			thread : (prop, data, img) => {
 				img = typeof img != "undefined" ? "<div class='image'>" + img + "</div>" : "";
 				var tag = forum.element.tag.textContent,
                     meta = "",
@@ -596,16 +603,16 @@
 				}
 				return meta + "<input id='switch" + prop + "' name='switch' type='radio' data-mode='post' data-request='' data-url='' data-img=''><form action='javascript:forum.fn.reply('" + prop + "')' id='" + prop + "' name='thread'><input type='hidden' name='lang' value='" + data.lang + "'><div class='info'><div class='infobox'><a href='/"+tag+"/" + data.email + "' name='profile' style='background-image:url(" + data.profile + ")'>" + data.name + "</a><a name='date'>" + forum.fn.dateFormat(data.date) + "</a>" + setting + "<a class='close' onclick='window.forum.fn.close()'><i class='alt'>close</i></a></div></div><label for='switch" + prop + "' name='content'>" + data.content + "</label><div id='reply"+prop+"' title='"+forum.lang.title.reply+"' class='reply' contenteditable onkeyup='window.forum.fn.oembed(this)' onkeydown='forum.fn.reply(event, this, '" + prop + "')'></div>" + parent + root + img + "</form>";
 			},
-			threads : function(json, key, tag, img) {
+			threads : (json, key, tag, img) => {
 				var thread_key = typeof json[key].root != "undefined" ? json[key].root + "#" + key : key;
 				return "<form name='threads' " + (typeof json[key].root == "undefined" ? "class='root'" : "") + " action='javascript:fetchRecord(this)'><input name='root' type='hidden' value='" + json[key].root + "'><input name='parent' type='hidden' value='" + json[key].parent + "'><input name='date' type='hidden' value='" + json[key].date + "'>" + img + "<div id='content" + key + "' class='content'><div class='info'><a class='profile' href='/" + tag + "/" + json[key].email + "' onclick='forum.fn.path(this)'><img class='profile_img' alt='" + json[key].name + "' src='https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg'><span class='name'>" + json[key].name + "</span></a><span class='date'>" + forum.fn.dateFormat(json[key].date) + "</span></div><a class='txt' href='/" + tag + "/" + thread_key + "' onclick='forum.fn.path(this, event)' contenteditable='false'>" + json[key].content + "</a></div></form>";
 			},
-			thread_media : function(json, key, num) {
+			thread_media : (json, key, num) => {
 				return "<a class='thumnail' id='media" + key + "'><img src='" + json[key].img[num] + "' alt='thumnail'></a>";
 			}
 		},
 		callback : {
-			game : function(json) {
+			game : (json) => {
 				var body = "",
 					entry = json.feed.entry,
 					category = json.feed.title.$t;
@@ -636,7 +643,7 @@
 					forum.fn.loading(0);
 				}
 			},
-			news : function(json) {
+			news : (json) => {
 				var body = "";
 				if(json.query.recentchanges.length){
 					var list = json.query.recentchanges;
@@ -650,7 +657,7 @@
 					forum.element.news.innerHTML = "<ul class='news'>" + body + "</ul>";
 				}
 			},
-			infobox : function(json) {
+			infobox : (json) => {
 				var dl ="",
 					keywords = "",
 					uri = "",
@@ -664,27 +671,31 @@
 					value = json[i].o.value.replace("http://ko.dbpedia.org/resource/","");
 					value = value.replace(/_/gi, " ");
 					if(json[i].k.value.indexOf("http://dbpedia.org/ontology/wikiPageWikiLink") >= 0)
-						if(value.indexOf(".svg") >= 0 || value.indexOf(".jpg") >= 0 || value.indexOf(".JPG") >= 0 || value.indexOf(".png") >= 0 || value.indexOf(".PNG") >= 0 || value.indexOf(".SVG") >= 0)
+						if(value.indexOf(".svg") >= 0 || value.indexOf(".jpg") >= 0 || value.indexOf(".JPG") >= 0 || value.indexOf(".png") >= 0 || value.indexOf(".PNG") >= 0 || value.indexOf(".SVG") >= 0){
 							images += forum.template.infobox_image(key, value.replace("파일:",""), i);
-						else if(json[i].k.value.indexOf("wikiPageWikiLink") >= 0)
+						}else if(json[i].k.value.indexOf("wikiPageWikiLink") >= 0){
 							keywords += "<a href='/" + value + "'>" + value + "</a>";
-					if(key == "url" || ((key == "주소" || key == "웹사이트") && json[i].o['type'] == "uri"))
+						}
+					if(key == "url" || ((key == "주소" || key == "웹사이트") && json[i].o["type"] == "uri")){
 						uri = value;
-					if(json[i].k.value.indexOf(property) >= 0 && json[i].o['xml:lang'])
-						if(dl.indexOf("<dt>" + key + "</dt>") >= 0)
+					}
+					if(json[i].k.value.indexOf(property) >= 0 && json[i].o["xml:lang"]){
+						if(dl.indexOf("<dt>" + key + "</dt>") >= 0){
 							dl += "<dt style='opacity:0'>" + key + "</dt><dd>" + value + "</dd>";
-						else if(value == forum.element.tag.textContent)
-							dl += "<dt>" + key + "</dt><dd><a target='_blank' id='domain_uri'>" + value + "</a></dd>";
-						else if(value.indexOf(".svg") >= 0 || value.indexOf(".jpg") >= 0 || value.indexOf(".JPG") >= 0 || value.indexOf(".png") >= 0 || value.indexOf(".PNG") >= 0 || value.indexOf(".SVG") >= 0)
-							infobox_image != "" ? infobox_image += forum.template.infobox_image(key, value, i) : infobox_image += forum.template.infobox_image(key, value, i, "checked");
-						else
-							dl += "<dt>" + key + "</dt><dd>" + value + "</dd>";
+						}else if(value == forum.element.tag.textContent){
+								dl += "<dt>" + key + "</dt><dd><a target='_blank' id='domain_uri'>" + value + "</a></dd>";
+						}else if(value.indexOf(".svg") >= 0 || value.indexOf(".jpg") >= 0 || value.indexOf(".JPG") >= 0 || value.indexOf(".png") >= 0 || value.indexOf(".PNG") >= 0 || value.indexOf(".SVG") >= 0){
+								infobox_image != "" ? infobox_image += forum.template.infobox_image(key, value, i) : infobox_image += forum.template.infobox_image(key, value, i, "checked");
+						}else{
+								dl += "<dt>" + key + "</dt><dd>" + value + "</dd>";
+						}
+					}
 				}
 				keywords.length > 0 ? forum.element.keywords.innerHTML = "<div>" + keywords + "</div>" : element.keywords.innerHTML = "";
 				dl.length > 0 ? forum.element.infobox.innerHTML = "<label for='more_images'><span>more</span></label><h2>" + infobox_image + images + "</h2><dl>" + dl + "</dl>" : forum.element.infobox.innerHTML = "";
 				uri.length > 0 ? dom.getElementById("domain_uri").href = uri : "";
 			},
-			autocomplete : function(json) {
+			autocomplete : (json) => {
 				var body = "";
 				var keyword = forum.element.tag.textContent;
 				if(json.length){
@@ -696,7 +707,7 @@
 					forum.element.shortcut.innerHTML = "";
 				}
 			},
-			firebase : function(json) {
+			firebase : (json) => {
 				if(typeof json != "undefined"){
 					var tpl = "",
 						img = "",
@@ -724,7 +735,7 @@
 					delete forum.callback.firebase.data;
 				}
 			},
-			delete : function(json) {
+			delete : (json) => {
 				if(json === null){
 					var keyword = forum.element.tag.textContent,
 						id = forum.callback.delete.id,
@@ -747,7 +758,7 @@
 					delete forum.callback.delete.id;
 				}
 			},
-			threads : function(json) {
+			threads : (json) => {
 				if(json){
 					var body = "",
 						parameters = bom.location.pathname,
@@ -779,7 +790,7 @@
 					!dom.getElementById("thread_none") ? forum.element.threads.innerHTML += "<div id='thread_none'>" + forum.lang.status.none + "</div>" : "";
 				}
 			},
-			thread : function(json) {
+			thread : (json) => {
 				var date, parameters = bom.location.pathname,
                     parameters = forum.fn.location(parameters),
 					id = parameters.id,
@@ -803,17 +814,19 @@
 					var key = keys[i],
 						img = "",
 						content = "";
-					if(typeof json[key].img != "undefined")
+					if(typeof json[key].img != "undefined"){
 						for(var g = 0, len2 = json[key].img.length-1; g <= len2; g++){
 							img += forum.template.thread_media(json, key, g);
 						}
-					if(typeof json[key].parent != "undefined")
+					}
+					if(typeof json[key].parent != "undefined"){
 						dom.getElementById(json[key].parent).outerHTML += forum.template.thread(key, json[key], img);
-					else
+					}else{
 						forum.element.thread.innerHTML += forum.template.thread(key, json[key], img);							
+					}
 				}
 			},
-			oembed : function(json) {
+			oembed : (json) => {
 				forum.element.jsonp.innerHTML += json.html;
 				var radio = dom.querySelector("[name='switch']:checked"),
 					iframe = forum.element.jsonp.getElementsByTagName("iframe");
@@ -821,29 +834,29 @@
 				radio.dataset.img += json.thumbnail_url+",";
 				iframe[0].remove();	
 			},
-			gist : function(json) {
+			gist : (json) => {
 				var self = forum.callback.gist,
 					el = dom.getElementById("media"+self.id);
 				el.innerHTML += "<link rel='stylesheet' href='" + json.stylesheet + "'>" + json.div;
-				delete self['id'];
+				delete self["id"];
 			}
 		},
 		error : {
-			thread : function() {
+			thread : () => {
 				
 			},
-			threads : function() {
+			threads : () => {
 
 			},
-			home : function() {
+			home : () => {
 
 			},
-			media : function() {
+			media : () => {
 				
 			}
 		}
 	}
-	bom.onload = function() {
+	bom.onload = () => {
 		var n = navigator,
 		uAgent = n.userAgent.toLowerCase(),
 		type = n.appName,
@@ -853,7 +866,10 @@
 		forum.fn.jsonp("/lang/" + forum.api.lang + ".js");
 		forum.init.route();
 		forum.init.sesstion();
-		typeof localStorage.code == "undefined" ? localStorage.code = JSON.stringify(forum) : "";
-		forum.api.popstate ? bom.onpopstate = function(event) {forum.init.route()} : "";
+		forum.api.popstate ? bom.onpopstate = (event) => {forum.init.route()} : "";
 	}
-})(window, document);
+})(window, document);`
+var script = document.createElement("script");
+    script.charset = "utf-8";
+    script.text = localStorage.code;
+    document.body.appendChild(script);

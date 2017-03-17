@@ -1,12 +1,4 @@
 (function(bom, dom) {
-	// 
-	// global forum
-	//    var
-	//        api, element
-	//    function
-	//        fn, init, route, oembed, template, rest, callback
-	// 
-	// 
 	bom.forum = {
 		api : {
 			lang : "",
@@ -19,7 +11,7 @@
 				return "https://spreadsheets.google.com/feeds/list/1-JVlP9YIwC2DydGZvAtOSmRE-BhN32IRK8g6AfchcQU/" + type + "/public/basic?alt=json-in-script&sq=date=" + date + "&callback=forum.callback.game";
 			},
 			news : function() {
-				return "https://" + forum.api.lang + ".wikinews.org/w/api.php?action=query&format=json&list=recentchanges&redirects=1&utf8=1&rcdir=newer&rcnamespace=0&rclimit=100&callback=forum.callback.news";;
+				return "https://" + forum.api.lang + ".wikinews.org/w/api.php?action=query&format=json&list=recentchanges&redirects=1&utf8=1&rcdir=newer&rcnamespace=0&rclimit=100&callback=forum.callback.news";
 			},
 			infobox : function(tag) {
 				return "http://" + forum.api.lang + ".dbpedia.org/sparql?default-graph-uri=http://" + forum.api.lang + ".dbpedia.org&query=select distinct * where { <http://" + forum.api.lang + ".dbpedia.org/resource/" + tag.replace(/%20/gi, "_") + "> ?k ?o . }&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on&callback=forum.callback.infobox";
@@ -35,7 +27,7 @@
 					parameter = (date ? "endAt=" + date + "&" : "") + "orderBy='date'&limitToLast=10";
 				return forum.api.restUrl + tag + ".json?" + parameter + "&callback=forum.callback.threads";
 			},
-			root : function(tag, root) { 
+			root : function(tag, root) {
 				return forum.api.restUrl + tag + "/" + root + ".json/?callback=forum.callback.thread";
 			},
 			branch : function(tag, root, date) {
@@ -94,7 +86,7 @@
 				forum.element.jsonp.appendChild(script);
 			},
 			scroll : function(bool) {
-				bool ? dom.body.setAttribute("onscroll", "window.forum.fn.scroll(event)") : dom.body.removeAttribute("onscroll");
+				bool ? bom.onscroll = function() {bom.forum.fn.scroll()} : bom.onscroll = null;
 			},
 			route : function() {
 				var parameters = bom.location.pathname,
@@ -127,6 +119,7 @@
 				forum.init.scroll(0);
 			},
 			threads : function(tag) {
+				tag = tag.replace("_", " ");
 				forum.element.shortcut.innerHTML = "";
 				forum.element.thread.innerHTML = "";
 				forum.element.keyword = tag;
@@ -140,9 +133,9 @@
 			home : function(parameters) {
 				!forum.element.news.innerHTML.length ? forum.init.scroll(0) : "";
 				forum.init.home();
-				if(typeof document.body.onscroll == "function"){
+				if(typeof bom.onscroll == "function"){
 					if(typeof parameters.date != "undefined")
-						!dom.querySelector(".game [value='" + parameters.date + "']") ? forum.fn.games(parameters) : "";
+						forum.fn.games(parameters)
 				}else{
 					forum.init.scroll(1);
 					forum.fn.jsonp(forum.api.news());
@@ -154,7 +147,7 @@
 				forum.fn.jsonp(forum.api.thread(parameters.tag, parameters.id));
 			},
 			threads : function(parameters) {
-				var tag = parameters.tag.replace("_", " "),
+				var tag = parameters.tag,
 					tag = decodeURIComponent(tag),
 					parametersUser = typeof parameters.user != "undefined",
 					parametersDate = typeof parameters.date == "undefined",
@@ -175,7 +168,7 @@
 				forum.init.threads(tag);
 				!threadsLen || parametersUser ? forum.init.scroll(0) : "";
 
-				if(typeof document.body.onscroll == "function")
+				if(typeof bom.onscroll == "function")
 					getDate();
 				else
 					if(parametersUser){
@@ -194,7 +187,6 @@
 			location : function(parameters) {
                 var path = {},
                     p = parameters.substr(1).split("/");
-                    
 
                 for(var i = 0, len = p.length; i < len; i++){
                     try {
@@ -219,17 +211,18 @@
 				return path;
 			},
 			prettyDate : function(date) {
+				console.log(date);
 				var d = [];
 					d.push(date.substr(0, 4));
 					d.push(date.substr(4, 2));
 					d.push(date.substr(6, 6));
-					d = d.toString();
-					d = new Date(d).getTime();
+					d = d.toString().replace(/,/gi,"-");
+					d = new Date(d).getTime()-1;
 					d = new Date(d).toISOString().substr(0,10).replace(/-/gi,"");
 				return d;
 			},
 			games : function(parameters) {
-				var date = typeof parameters.date != "undefined" ? parameters.date : new Date(new Date().getTime() - 86400000).toISOString().substr(0,10).replace(/-/gi,"");		
+				var date = typeof parameters.date != "undefined" ? parameters.date : new Date(new Date().getTime() - 86400000).toISOString().substr(0,10).replace(/-/gi,"");
 				forum.fn.jsonp(forum.api.game(1, date));
 				forum.fn.jsonp(forum.api.game(2, date));
 				forum.fn.jsonp(forum.api.game(3, date));
@@ -264,11 +257,10 @@
 				xhr.onreadystatechange = function(e) {
 					if (e.target.readyState == 4 && e.target.status == 200){
 						var json = eval("("+e.target.responseText+")");
-						if(typeof type == "function"){
+						if(typeof type == "function")
 							type(json);
-						}else{
+						else
 							forum.callback[type](json);
-						}
 						return;
 					}else{
 						console.log(e);
@@ -382,23 +374,21 @@
 				}
 			},
 			scroll : function(v) {
-				if(v.type == "scroll"){
-					var limit = dom.body.scrollHeight - dom.documentElement.clientHeight,
-						top = dom.body.scrollTop;
-					if(top >= limit){
-						var path, parameters = bom.location.pathname,
-							parameters = parameters ? forum.fn.location(parameters) : "",
-							date = dom.getElementsByName("date");
-							typeof parameters.date ? delete parameters.date : "";
+				var limit = dom.body.scrollHeight - dom.documentElement.clientHeight,
+					top = dom.body.scrollTop || dom.documentElement.scrollTop;
+				if(top >= limit){
+					var path, parameters = bom.location.pathname,
+						parameters = parameters ? forum.fn.location(parameters) : "",
+						date = dom.getElementsByName("date");
+						typeof parameters.date ? delete parameters.date : "";
 
-							if(parameters.tag)								
-                                path = "/" + parameters.tag + "/" + (date[date.length - 1].value - 1);
-							else
-								path = forum.fn.prettyDate(date[date.length - 1].value);
-						date ? forum.fn.path(path) : "";
-						forum.init.scroll(0);
-						forum.fn.loading(1);
-					}
+						if(parameters.tag)
+							path = "/" + parameters.tag + "/" + (date[date.length - 1].value - 1);
+						else
+							path = forum.fn.prettyDate(date[date.length - 1].value);
+					date ? forum.fn.path(path) : "";
+					forum.init.scroll(0);
+					forum.fn.loading(1);
 				}
 			},
 			util : function(keyword) {
@@ -437,7 +427,7 @@
 					var content = el.textContent,
 						path = typeof forum.element.tag.textContent != "undefined" ? forum.element.tag.textContent : "",
 						el = dom.querySelector("[name='switch']:checked");
-					forum.rest.post(content, path, id);	
+					forum.rest.post(content, path, id);
 
 					setTimeout(function(){ el.innerHTML = "" }, 0);
 				}

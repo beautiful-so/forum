@@ -88,11 +88,11 @@ body > #aside > #keywords input:checked+label+select{display: inline; font-weigh
 body > #aside > #keywords [for='nav'],
 body > #aside > #keywords #nav{border-bottom:1px solid;}
 body.loading > #main{background: url(/img/load.gif) no-repeat bottom center;}
-body > #main > #news > ul > li{position: relative; margin-bottom:10px; height:62px; box-sizing:border-box; box-shadow: 0px 0px 4px rgba(30, 30, 30, 0.2); background-color: #000;}
-body > #main > #news > ul > li > a:before{content: ""; position: absolute; left: -62px; border:6px solid #fff; width:50px; height:50px; background:#fff url("/img/logo.gif") no-repeat 0 -2000px; opacity: 1;}
+body > #main > #news > ul > li{position: relative; margin-bottom:10px; height:62px; box-sizing:border-box; box-shadow: 0px 0px 4px rgba(30, 30, 30, 0.2); background-color: #fff;}
+body > #main > #news > ul > li > a:before{content: ""; position: absolute; left: -62px; border:6px solid #fff; box-sizing: border-box; width:62px; height:100%; background:#fff url("/img/logo.gif") no-repeat 0 -2000px; opacity: 1;}
 body > #main > #news > ul > li > a:after{content: ""; position: absolute; margin: auto; left: 0; top: 0; bottom: 0; width: 0px; height: 0px; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-left: 6px solid white;}
-body > #main > #news > ul > li > a{position: absolute; left: 62px; right: 0; top: 0; bottom: 0; padding-left: 15px; line-height: 62px; font-size: 14px; color:#fff;}
-body > #main > div:empty{margin-bottom: 0 !important;}
+body > #main > #news > ul > li > a{position: absolute; left: 62px; right: 0; top: 0; bottom: 0; padding-left: 15px; line-height: 62px; font-size: 14px;}
+body > #main > body > #main > #thread .media img:empty{margin-bottom: 0 !important;}
 body > #main {padding-bottom: 40px;}
 body > #main > #threads > form{position: relative; overflow:hidden; margin-bottom: 10px; background: #fff; box-shadow: 0px 0px 4px rgba(30, 30, 30, 0.2);}
 /*body > #main > #threads > form.root:after{content:""; position: absolute;}*/
@@ -125,17 +125,18 @@ body > #main > #thread input[type='radio']:checked + form .info{display: block;}
 body > #main > #thread input[data-mode='modify']:checked + form [name="content"]{display: none;}
 body > #main > #thread input[data-mode='modify']:checked + form .reply:before{content:"수정 : "; font-weight:bold; color:#f00;}
 body > #main > #thread .media{position: relative; display: block; margin-bottom: 10px; cursor: pointer;}
-body > #main > #thread .media:after{content:"▹"; position: absolute; border:3px solid #000; border-radius: 50%; margin: auto; top: 0; right: 0; bottom: 0; left: 0; width:100px; height:100px; line-height: 100px; font-size: 100px; text-indent: 10px; text-align: center;}
+body > #main > #thread .media:after{content:"▹"; position: absolute; border-radius: 50%; margin: auto; top: 0; right: 0; bottom: 0; left: 0; width:100px; height:100px; line-height: 100px; font-size: 100px; text-indent: 10px; text-align: center; color:#fff;}
+body > #main > #thread .media:before{content:""; position: absolute; width:100%; height:100%; background-color: #000;}
 body > #main > #thread .media:hover:after{content:"▸";}
 body > #main > #thread .media~.media{margin-top: 20px;}
-body > #main > #thread .media img{width:100%; cursor: pointer;}
+body > #main > #thread .media img{position: relative; width:100%; cursor: pointer; opacity: 0.5; z-index: 1;}
 body > #main > #thread .media iframe{position: absolute; left: 0; top:0; width:100%; height:100%; z-index: 1; cursor: initial;}
 body > #main > #thread .media .gist{position: absolute; left: 0; top: 0; width:100%; height:93%; z-index: 1; cursor: initial;}
 body > #main > #thread .media .gist *{height:100%}
 body > #main > #thread .media .gist .gist-meta{height:auto;}
 body > #main > #thread form,
 body > #main > #thread form *{display: inline;}
-body > #main > #thread .reply{position: relative; border-bottom: 1px solid #000; font-size: 15px; color:#bbb; z-index: 12;}
+body > #main > #thread .reply{position: relative; margin: 10px; font-size: 15px; color:#bbb; z-index: 12;}
 body > #main > #thread .reply br{display: none;}
 body > #main > #thread .reply,
 body > #main > #thread .image,

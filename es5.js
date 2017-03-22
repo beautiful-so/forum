@@ -4,6 +4,7 @@
 			lang : "",
 			popstate : typeof bom.onpopstate != "undefined",
 			restUrl : "https://fora.firebaseio.com/",
+			state : false,
 			autocomplete : function(keyword) {
 				return "http://" + forum.api.lang + ".wikipedia.org/w/api.php?action=opensearch&limit=10&format=json&utf8=1&callback=forum.callback.autocomplete&search=" + keyword;
 			},
@@ -19,9 +20,11 @@
 			thread : function(tag, id) {
 				return forum.api.restUrl + tag + "/" + id + ".json?callback=forum.callback.thread";
 			},
-			threads : function(tag, date, user) {
+			threads : function(tag, date, user, back) {
 				var parameter = "";
-				if(typeof user != "undefined"){
+				if(back){
+					parameter = (date ? "startAt=" + date + "&" : "") + "orderBy=\"date\"&limitToLast=10";
+				}else if(typeof user != "undefined"){
 					parameter = "orderBy=\"email\"&equalTo=\"" + user + "\"&limitToLast=50";
 				}else{
 					parameter = (date ? "endAt=" + date + "&" : "") + "orderBy=\"date\"&limitToLast=10";
@@ -132,10 +135,11 @@
 		},
 		route : {
 			home : function(parameters) {
+				var date = dom.querySelector("[value='"+parameters.date+"']");
 				!forum.element.news.innerHTML.length ? forum.init.scroll(0) : "";
 				forum.init.home();
 				if(typeof bom.onscroll == "function"){
-					if(typeof parameters.date != "undefined")
+					if(typeof parameters.date != "undefined" && !date)
 						forum.fn.games(parameters)
 				}else{
 					forum.init.scroll(1);
@@ -155,9 +159,12 @@
 					el = forum.element.threads,
 					threadsLen = el.innerHTML.length,
 					getDate = function() {
-						var date = dom.getElementsByName("date");
+						var date = dom.getElementsByName("date"),
+							el = dom.getElementsByName("threads")[0];
 							date = date.length ? date[date.length-1].value*1 : forum.fn.jsonp(forum.api.threads(tag, parameters.date));
-							if(date == ((parameters.date*1)+1)){
+							if(el && forum.fn.currentScroll() == 0){
+								forum.fn.jsonp(forum.api.threads(tag, parameters.date, null, true));
+							}else if(date == ((parameters.date*1)+1)){
 								forum.fn.jsonp(forum.api.threads(tag, parameters.date));
 							}else if(!dom.getElementById("thread_none")){
 								forum.init.scroll(1);
@@ -215,13 +222,12 @@
 				return path;
 			},
 			prettyDate : function(date) {
-				console.log(date);
 				var d = [];
 					d.push(date.substr(0, 4));
 					d.push(date.substr(4, 2));
 					d.push(date.substr(6, 6));
 					d = d.toString().replace(/,/gi,"-");
-					d = new Date(d).getTime()-1;
+					d = new Date(d).getTime() + (forum.fn.currentScroll() == 0 ? 86400000 : -1);
 					d = new Date(d).toISOString().substr(0,10).replace(/-/gi,"");
 				return d;
 			},
@@ -347,14 +353,14 @@
 						autocomplete();
 						break;
 					case 9 :
-						element.tag.removeAttribute("contenteditable");
-						element.tag.setAttribute("contenteditable","true");
+						forum.element.tag.removeAttribute("contenteditable");
+						forum.forum.element.tag.setAttribute("contenteditable","true");
 						break;
 					case 13 :
 						submit();
 						break;
 					case 27 :
-						element.shortcut.innerHTML = "";
+						forum.element.shortcut.innerHTML = "";
 						break;
 					case 38 :
 						if(area){
@@ -378,20 +384,30 @@
 						break;
 				}
 			},
+			currentScroll : function(){
+				return dom.body.scrollTop || dom.documentElement.scrollTop;
+			},
 			scroll : function(v) {
 				var limit = dom.body.scrollHeight - dom.documentElement.clientHeight,
-					top = dom.body.scrollTop || dom.documentElement.scrollTop;
-				if(top >= limit){
-					var path, parameters = bom.location.pathname,
-						parameters = parameters ? forum.fn.location(parameters) : "",
-						date = dom.getElementsByName("date");
-						typeof parameters.date ? delete parameters.date : "";
-
-						if(parameters.tag){
-							path = "/" + parameters.tag + "/" + (date[date.length - 1].value - 1);
-						}else{
-							path = forum.fn.prettyDate(date[date.length - 1].value);
-						}
+					current = forum.fn.currentScroll(),
+					path, parameters = bom.location.pathname,
+					parameters = parameters ? forum.fn.location(parameters) : "",
+					date = dom.getElementsByName("date");
+				if(current == 0){
+					if(parameters.tag){
+						path = "/" + parameters.tag + "/" + (date[0].value);
+					}else{
+						path = forum.fn.prettyDate(date[0].value);
+					}
+					date ? forum.fn.path(path) : "";
+					forum.init.scroll(0);
+					forum.fn.loading(1);
+				}else if(current >= limit){
+					if(parameters.tag){
+						path = "/" + parameters.tag + "/" + (date[date.length - 1].value - 1);
+					}else{
+						path = forum.fn.prettyDate(date[date.length - 1].value);
+					}
 					date ? forum.fn.path(path) : "";
 					forum.init.scroll(0);
 					forum.fn.loading(1);
@@ -638,7 +654,12 @@
 							body += forum.template.game(category, game, league, home, home_score, home_country, away, away_score, away_country, date, youtube, win, img);
 						}
 					}
-					games.innerHTML += body;
+					var el = document.getElementsByName("game")[0];
+					if(el && forum.fn.currentScroll() == 0){						
+						el.outerHTML = body + el.outerHTML;
+					}else{
+						games.innerHTML += body;
+					}
 					forum.init.scroll(1);
 					forum.fn.loading(0);
 				}
@@ -763,8 +784,9 @@
 					var body = "",
 						parameters = bom.location.pathname,
 						parameters = parameters ? forum.fn.location(parameters) : "",
-						tag = parameters.tag;
-					var keys = Object.keys(json).sort().reverse();
+						tag = parameters.tag,
+						keys = Object.keys(json).sort().reverse(),
+						el = dom.getElementsByName("threads")[0];
 
 					for(var i = 0, len1 = keys.length; i < len1; i++){
 						var key = keys[i],
@@ -776,8 +798,9 @@
 							}
 						body += forum.template.threads(json, key, tag, img);
 					}
-
-					if(typeof parameters.user == "undefined"){
+					if(el && forum.fn.currentScroll() == 0){
+						el.outerHTML = body+el.outerHTML;
+					}else if(typeof parameters.user == "undefined"){
 						forum.element.threads.innerHTML += body;
 						forum.init.scroll(1);
 					}else{
@@ -787,6 +810,7 @@
 				}else{
 					forum.init.scroll(0);
 					forum.fn.loading(0);
+					history.back();
 					!dom.getElementById("thread_none") ? forum.element.threads.innerHTML += "<div id=\"thread_none\">" + forum.lang.status.none + "</div>" : "";
 				}
 			},

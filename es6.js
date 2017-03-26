@@ -834,7 +834,6 @@ localStorage.code = `(function(bom, dom) {
 			}else{
 				this.scrollInit(0);
 				this.loadingFn(0);
-				history.back();
 				!dom.getElementById("thread_none") ? this.threadsElement.innerHTML += \`<div id="thread_none">\${this.lang.status.none}</div>\` : "";
 			}
 		},

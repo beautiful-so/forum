@@ -10,15 +10,15 @@
 	<body>
 		<header id="header">
 			<input type="radio" name="switch" id="switch" data-mode="post" data-request="" data-url="" data-img="">
-			<form name="form" action="javascript:forum.fn.util()">
+			<form name="form" action="javascript:forum.utilFn()">
 				<fieldset>
 					<div id="util">
-						<input type="radio" onkeydown="window.forum.fn.keywordFocus(event)" name="keyword">
-						<label id="tag" onkeyup="window.forum.fn.keywordFocus(event)" onclick="" contenteditable></label>
+						<input type="radio" onkeydown="window.forum.keywordFocusFn(event)" name="keyword">
+						<label id="tag" onkeyup="window.forum.keywordFocusFn(event)" onclick="" contenteditable></label>
 						<label for="switch"></label>
 						<strong><h1 id="headline"><a href="/">forum</a></h1><i class="placeholder"></i></strong>
-						<input name="content" type="text" maxlength="150" onkeyup="window.forum.fn.oembed(this)" placeholder="" shortcut="off" list="keep" required><datalist id="keep"></datalist>
-						<select name="nav" id="nav" onchange="window.forum.fn.nav(this.value)">
+						<input name="content" type="text" maxlength="150" onkeyup="window.forum.oembedFn(this)" placeholder="" shortcut="off" list="keep" required><datalist id="keep"></datalist>
+						<select name="nav" id="nav" onchange="window.forum.navFn(this.value)">
 							<option value="default">&mldr;</option>
 							<option class="signin" value="Google">Google</option>
 							<option class="signin" value="Facebook">Facebook</option>
@@ -28,7 +28,7 @@
 						</select>
 					</div>
 					<div id="shortcut" onfocusout=""></div>
-					<div onclick="window.forum.callback.autocomplete(0)" class="dim"></div>
+					<div onclick="window.forum.autocompleteCallback(0)" class="dim"></div>
 				</fieldset>
 			</form>
 		</header>
@@ -48,22 +48,15 @@
 		<div id="jsonp"></div>
 		<script>
 			(function(dom) {
-				if(typeof String.raw != "undefined"){
-					if(typeof localStorage.code != "undefined"){
-						var script = dom.createElement("script");
-						script.charset = "utf-8";
-						script.text = localStorage.code;
-						dom.body.appendChild(script);
-					}else{
-						var script = dom.createElement("script");
-							script.src = "/es6.js";
-							dom.body.appendChild(script);
-					}
+				var script = dom.createElement("script"),
+					cache = typeof localStorage.code != "undefined",
+					support = typeof String.raw != "undefined";
+				if(support){
+					cache ? script.text = localStorage.code : script.src = "/es6.js";
 				}else{
-					var script = dom.createElement("script");
-						script.src = "/es5.js";
-						dom.body.appendChild(script);
+					script.src = "/es5.js";
 				}
+				dom.body.appendChild(script);
 			})(document);
 		</script>
 	</body>

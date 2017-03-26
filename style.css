@@ -24,9 +24,7 @@ body > #header > form[name='form'] > fieldset > #util > input[name='content'] {d
 body > #header > form[name='form'] > fieldset > #util > input[name='content']:focus{background-color: rgba(0,0,0,0);}
 body > #header > form[name='form'] > fieldset > #util > input[name='keyword'] {position: absolute; width: 0; height: 0; opacity: 0;}
 body > #header > form[name='form'] > fieldset > #util > strong {display: none; position: absolute; margin: auto; top: 0; bottom: 0; left: 0; height: 1em; font-size: 24px; z-index: -1;}
-body > #header > form[name='form'] > fieldset > #util > strong > h1 > *{font-size: 24px; font-weight: bold; color:#f00;}
-body > #header > form[name='form'] > fieldset > #util > strong > h1 > select{position: relative; top:-4px; width:150px; background-color: transparent;}
-body > #header > form[name='form'] > fieldset > #util > strong > .placeholder {white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-left: 15px; font-weight: normal; font-style: normal; font-size: 1rem; line-height: 24px;}
+body > #header > form[name='form'] > fieldset > #util > strong > .placeholder {white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: normal; font-style: normal; font-size: 1rem; line-height: 24px;}
 body > #header > form[name='form'] > fieldset > #shortcut {position: absolute; top: 45px; left: 0; width: 100%; box-sizing: border-box; background-color: rgba(240, 240, 240, 0.9); z-index: 1;}
 body > #header > form[name='form'] > fieldset > .dim {position: fixed; display: block; left: 0; top: 0; width: 100%; height: 100%; z-index: 0;}
 body > #header > form[name='form'] > fieldset > #shortcut:empty + .dim {display: none;}

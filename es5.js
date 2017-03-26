@@ -746,7 +746,7 @@
 					}
 				}
 			}
-			keywords.length > 0 ? this.keywordsElement.innerHTML = "<div>" + keywords + "</div>" : element.keywords.innerHTML = "";
+			keywords.length > 0 ? this.keywordsElement.innerHTML = "<div>" + keywords + "</div>" : "";
 			dl.length > 0 ? this.infoboxElement.innerHTML = "<label for=\"more_images\"><span>more</span></label><h2>" + infobox_image + images + "</h2><dl>" + dl + "</dl>" : this.infoboxElement.innerHTML = "";
 			uri.length > 0 ? dom.getElementById("domain_uri").href = uri : "";
 		},

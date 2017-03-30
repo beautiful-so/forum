@@ -14,7 +14,7 @@
 			url : /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi,
 			email : /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i
 		},
-		restUrl : "https://fora.firebaseio.com/",
+		restUrl : "https://fora.firebaseio.com/tag/",
 		autocompleteUrl : function(keyword) {
 			return "http://" + this.lang.type + ".wikipedia.org/w/api.php?action=opensearch&limit=10&format=json&utf8=1&callback=forum.autocompleteCallback&search=" + keyword;
 		},

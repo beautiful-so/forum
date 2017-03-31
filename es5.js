@@ -179,10 +179,9 @@
 			}
 			this.threadsInit(tag);
 			!threadsLen || parametersUser ? this.scrollInit(0) : "";
-
 			if(typeof bom.onscroll == "function"){
 				this.getThreadsFn(tag, parameters);
-			}else{
+			}else if(!threadsLen && !this.threadElement.innerHTML.length){
 				if(parametersUser){
 					dom.body.className += " user";
 					this.jsonpFn(this.threadsUrl(tag, null, parameters.user));

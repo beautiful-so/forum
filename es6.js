@@ -15,7 +15,7 @@ localStorage.code = `(function(bom, dom) {
 			url : /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi,
 			email : /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i
 		},
-		restUrl : "https://fora.firebaseio.com/",
+		restUrl : "https://fora.firebaseio.com/tag/",
 		autocompleteUrl : function(keyword) {
 			return \`http://\${this.lang.type}.wikipedia.org/w/api.php?action=opensearch&limit=10&format=json&utf8=1&callback=forum.autocompleteCallback&search=\${keyword}\`;
 		},
@@ -178,7 +178,7 @@ localStorage.code = `(function(bom, dom) {
 
 			if(typeof bom.onscroll == "function"){
 				this.getThreadsFn(tag, parameters);
-			}else{
+			}else if(!threadsLen && !this.threadElement.innerHTML.length){
 				if(parametersUser){
 					dom.body.className += " user";
 					this.jsonpFn(this.threadsUrl(tag, null, parameters.user));
@@ -476,7 +476,7 @@ localStorage.code = `(function(bom, dom) {
 			if(type){
 				type == "Google" ? this.jsonpFn("https://apis.google.com/js/platform.js") : "";
 				var provider = new firebase.auth[type+"AuthProvider"]();
-				ffirebase.auth().signInWithRedirect(provider).then(function(result) {
+				firebase.auth().signInWithRedirect(provider).then(function(result) {
 					var	token = result.credential.accessToken,
 						user = result.user;
 				}).catch(function(error) {

@@ -1,88 +1,89 @@
+"use strict";
+
 /**
 	* Copyright (c) 2016 forum.red Corp.
 	* forum.red projects are licensed under the MIT license
 */
-(function(bom, dom) {
+(function (bom, dom) {
+	"use strict;";
+
 	bom.forum = {
-	/**
-		* option
-		* 
-	*/	
-		lang : {},
-		popstate : typeof bom.onpopstate != "undefined",
-		regex : {
-			url : /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi,
-			email : /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i
+		/**
+  	* option
+  	* 
+  */
+		lang: {},
+		popstate: typeof bom.onpopstate != "undefined",
+		regex: {
+			url: /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi,
+			email: /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i
 		},
-		restUrl : "https://fora.firebaseio.com/tag/",
-		autocompleteUrl : function(keyword) {
+		restUrl: "https://fora.firebaseio.com/tag/",
+		autocompleteUrl: function autocompleteUrl(keyword) {
 			return "http://" + this.lang.type + ".wikipedia.org/w/api.php?action=opensearch&limit=10&format=json&utf8=1&callback=forum.autocompleteCallback&search=" + keyword;
 		},
-		gameUrl : function(type, date) {
+		gameUrl: function gameUrl(type, date) {
 			return "https://spreadsheets.google.com/feeds/list/1-JVlP9YIwC2DydGZvAtOSmRE-BhN32IRK8g6AfchcQU/" + type + "/public/basic?alt=json-in-script&sq=date=" + date + "&callback=forum.gameCallback";
 		},
-		newsUrl : function() {
+		newsUrl: function newsUrl() {
 			return "https://" + this.lang.type + ".wikinews.org/w/api.php?action=query&format=json&list=recentchanges&redirects=1&utf8=1&rcdir=newer&rcnamespace=0&rclimit=100&callback=forum.newsCallback";
 		},
-		infoboxUrl : function(tag) {
+		infoboxUrl: function infoboxUrl(tag) {
 			return "http://" + this.lang.type + ".dbpedia.org/sparql?default-graph-uri=http://" + this.lang.type + ".dbpedia.org&query=select distinct * where { <http://" + this.lang.type + ".dbpedia.org/resource/" + tag.replace(/%20/gi, "_") + "> ?k ?o . }&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on&callback=forum.infoboxCallback";
 		},
-		threadUrl : function(tag, id) {
-			return this.restUrl + tag + "/" + id + ".json?callback=forum.threadCallback";
+		threadUrl: function threadUrl(tag, id) {
+			return "" + this.restUrl + tag + "/" + id + ".json?callback=forum.threadCallback";
 		},
-		threadsUrl : function(tag, date, user, back) {
+		threadsUrl: function threadsUrl(tag, date, user, back) {
 			var parameter = "";
-			if(back){
+			if (back) {
 				parameter = (date ? "startAt=" + date + "&" : "") + "orderBy=\"date\"&limitToLast=10";
-			}else if(typeof user != "undefined"){
+			} else if (typeof user != "undefined") {
 				parameter = "orderBy=\"email\"&equalTo=\"" + user + "\"&limitToLast=50";
-			}else{
+			} else {
 				parameter = (date ? "endAt=" + date + "&" : "") + "orderBy=\"date\"&limitToLast=10";
 			}
-			return this.restUrl + tag + ".json?" + parameter + "&callback=forum.threadsCallback";
+			return "" + this.restUrl + tag + ".json?" + parameter + "&callback=forum.threadsCallback";
 		},
-		rootUrl : function(tag, root) {
-			return this.restUrl + tag + "/" + root + ".json/?callback=forum.threadCallback";
+		rootUrl: function rootUrl(tag, root) {
+			return "" + this.restUrl + tag + "/" + root + ".json/?callback=forum.threadCallback";
 		},
-		branchUrl : function(tag, root, date) {
-			return this.restUrl + tag + ".json?equalTo=\"" + root + "\"&orderBy=\"root\"&callback=forum.threadCallback";
+		branchUrl: function branchUrl(tag, root, date) {
+			return "" + this.restUrl + tag + ".json?equalTo=\"" + root + "\"&orderBy=\"root\"&callback=forum.threadCallback";
 		},
-
-	/**
-		* element
-		* 
-	*/	
-
-		jsonpElement : dom.getElementById("jsonp"),
-		shortcutElement : dom.getElementById("shortcut"),
-		switchElement : dom.getElementById("switch"),
-		formElement : dom.form,
-		navElement : dom.getElementById("nav"),
-		tagElement : dom.getElementById("tag"),
-		newsElement : dom.getElementById("news"),
-		gamesElement : dom.getElementById("games"),
-		threadsElement : dom.getElementById("threads"),
-		threadElement : dom.getElementById("thread"),
-		imagesElement : dom.getElementById("images"),
-		mainElement : dom.getElementById("main"),
-		asideElement : dom.getElementById("aside"),
-		keywordsElement : dom.getElementById("keywords"),
-		infoboxElement : dom.getElementById("infobox"),
-
-	/**
-		* init
-		* 
-	*/
-		sesstionInit : function() {
+		/**
+  	* element
+  	* 
+  */
+		jsonpElement: dom.getElementById("jsonp"),
+		shortcutElement: dom.getElementById("shortcut"),
+		switchElement: dom.getElementById("switch"),
+		formElement: dom.form,
+		navElement: dom.getElementById("nav"),
+		tagElement: dom.getElementById("tag"),
+		newsElement: dom.getElementById("news"),
+		gamesElement: dom.getElementById("games"),
+		threadsElement: dom.getElementById("threads"),
+		threadElement: dom.getElementById("thread"),
+		imagesElement: dom.getElementById("images"),
+		mainElement: dom.getElementById("main"),
+		asideElement: dom.getElementById("aside"),
+		keywordsElement: dom.getElementById("keywords"),
+		infoboxElement: dom.getElementById("infobox"),
+		/**
+  	* init
+  	* 
+  */
+		sesstionInit: function sesstionInit() {
 			var script = dom.createElement("script");
 			script.src = "//www.gstatic.com/firebasejs/live/3.0/firebase.js";
-			script.onload = function() {
+			script.onload = function () {
 				var config = {
 					apiKey: "AIzaSyBi0JE_HRNznjb_43Bcv5xoBHuZEaCT07M",
 					authDomain: "fora.firebaseapp.com"
 				};
 				firebase.initializeApp(config);
-				firebase.auth().onAuthStateChanged(function(user) {
+				firebase.auth().onAuthStateChanged(function (user) {
 					if (user) {
 						var key = bom.localStorage.key(0);
 						bom.localStorage.api = user.Xc;
@@ -91,41 +92,43 @@
 						bom.localStorage.profile = user.photoURL;
 						forum.auth = user.Xc;
 						el = dom.querySelectorAll(".signin");
-						for(var i = 0, len = el.length; i < len; i++){
+						for (var i = 0, len = el.length; i < len; i++) {
 							el[i].remove();
 						}
-					}else{
+					} else {
 						dom.querySelectorAll(".signout").remove();
 					}
 				});
 			};
 			this.jsonpElement.appendChild(script);
 		},
-		scrollInit : function(bool) {
-			bool ? bom.onscroll = function() {bom.forum.scrollFn()} : bom.onscroll = null;
+		scrollInit: function scrollInit(bool) {
+			bool ? bom.onscroll = function () {
+				bom.forum.scrollFn();
+			} : bom.onscroll = null;
 		},
-		routeInit : function() {
+		routeInit: function routeInit() {
 			var parameters = bom.location.pathname,
-				parameters = parameters ? this.locationFn(parameters) : "";
+			    parameters = parameters ? this.locationFn(parameters) : "";
 
-			if(parameters.id){
+			if (parameters.id) {
 				this.threadPath(parameters);
 				return;
-			}else if(parameters.tag){
+			} else if (parameters.tag) {
 				this.threadsPath(parameters);
 				return;
-			}else{
+			} else {
 				this.homePath(parameters);
 			}
 		},
-		homeInit : function() {
+		homeInit: function homeInit() {
 			dom.body.removeAttribute("class");
 			dom.title = "forum.red";
 			this.threadElement.innerHTML = "";
 			this.threadsElement.innerHTML = "";
 			this.tagElement.textContent = "";
 		},
-		threadInit : function(tag) {
+		threadInit: function threadInit(tag) {
 			var v = tag.replace("_", " ");
 			v = decodeURIComponent(v);
 			dom.title = v;
@@ -134,7 +137,7 @@
 			this.threadElement.innerHTML = "";
 			this.scrollInit(0);
 		},
-		threadsInit : function(tag) {
+		threadsInit: function threadsInit(tag) {
 			tag = tag.replace("_", " ");
 			this.shortcutElement.innerHTML = "";
 			this.threadElement.innerHTML = "";
@@ -142,80 +145,79 @@
 			this.tagElement.textContent = tag;
 			dom.body.className = "threads";
 		},
-		langInit : function(json) {this.lang = json},
-
-	/**
-		* route
-		* 
-	*/
-
-		homePath : function(parameters) {
-			var date = dom.querySelector("[value='"+parameters.date+"']");
+		langInit: function langInit(json) {
+			this.lang = json;
+		},
+		/**
+  	* route
+  	* 
+  */
+		homePath: function homePath(parameters) {
 			!this.newsElement.innerHTML.length ? this.scrollInit(0) : "";
 			this.homeInit();
-			if(typeof bom.onscroll == "function"){
-				if(typeof parameters.date != "undefined" && !date)
-					this.gamesFn(parameters)
-			}else{
+			if (typeof bom.onscroll == "function") {
+				var date = dom.querySelector("[value='" + parameters.date + "']");
+				if (typeof parameters.date != "undefined" && !date) this.gamesFn(parameters);
+			} else {
 				this.scrollInit(1);
 				this.jsonpFn(this.newsUrl());
 				this.gamesFn(parameters);
 			}
 		},
-		threadPath : function(parameters) {
+		threadPath: function threadPath(parameters) {
 			this.threadInit(parameters.tag);
 			this.jsonpFn(this.threadUrl(parameters.tag, parameters.id));
 		},
-		threadsPath : function(parameters) {
+		threadsPath: function threadsPath(parameters) {
 			var tag = parameters.tag,
-				tag = decodeURIComponent(tag),
-				parametersUser = typeof parameters.user != "undefined",
-				parametersDate = typeof parameters.date == "undefined",
-				el = this.threadsElement,
-				threadsLen = el.innerHTML.length;
-			if(dom.title != tag || this.infoboxElement.innerHTML.length == 0 || (dom.body.className.indexOf("user") > 0 && !parametersUser)){
+			    tag = decodeURIComponent(tag),
+			    parametersUser = typeof parameters.user != "undefined",
+			    parametersDate = typeof parameters.date == "undefined",
+			    el = this.threadsElement,
+			    threadsLen = el.innerHTML.length;
+			if (dom.title != tag || this.infoboxElement.innerHTML.length == 0 || dom.body.className.indexOf("user") > 0 && !parametersUser) {
 				this.jsonpFn(this.infoboxUrl(tag));
 				el.innerHTML = "";
 			}
 			this.threadsInit(tag);
 			!threadsLen || parametersUser ? this.scrollInit(0) : "";
-			if(typeof bom.onscroll == "function"){
+
+			if (typeof bom.onscroll == "function") {
 				this.getThreadsFn(tag, parameters);
-			}else if(!threadsLen && !this.threadElement.innerHTML.length){
-				if(parametersUser){
+			} else if (!threadsLen && !this.threadElement.innerHTML.length) {
+				if (parametersUser) {
 					dom.body.className += " user";
 					this.jsonpFn(this.threadsUrl(tag, null, parameters.user));
 					return;
-				}else if(parametersDate){
+				} else if (parametersDate) {
 					el.innerHTML.length == 0 ? this.jsonpFn(this.threadsUrl(tag)) : this.getThreadsFn(tag, parameters);
 					return;
-				}else{
+				} else {
 					this.getThreadsFn(tag, parameters);
 				}
 			}
 		},
-
-	/**
-		* function
-		* 
-	*/
-		locationFn : function(parameters) {
+		/**
+  	* function
+  	* 
+  */
+		locationFn: function locationFn(parameters) {
 			var path = {},
-				p = parameters.substr(1).split("/");
+			    p = parameters.substr(1).split("/");
 
-			for(var i = 0, len = p.length; i < len; i++){
+			for (var i = 0, len = p.length; i < len; i++) {
 				try {
-					if((p[i].length == 8 || p[i].length == 13) && typeof eval(p[i]) === "number"){
-						path.date = p[i]*1;
-					}else{
-						if(i == 0){
+					if ((p[i].length == 8 || p[i].length == 13) && typeof eval(p[i]) === "number") {
+						path.date = p[i] * 1;
+					} else {
+						if (i == 0) {
 							path.tag = p[i];
-						}else{
-							if(p[i].length == 8 && typeof eval(p[i]) === "number"){
-								path.date = p[1]*1;
-							}else if(p[i].match(this.regex.email)){
+						} else {
+							if (p[i].length == 8 && typeof eval(p[i]) === "number") {
+								path.date = p[1] * 1;
+							} else if (p[i].match(this.regex.email)) {
 								path.email = p[i];
-							}else{
+							} else {
 								path.id = p[i];
 							}
 						}
@@ -226,203 +228,202 @@
 			}
 			return path;
 		},
-		prettyDateFn : function(date) {
+		prettyDateFn: function prettyDateFn(date) {
 			var d = [];
-				d.push(date.substr(0, 4));
-				d.push(date.substr(4, 2));
-				d.push(date.substr(6, 6));
-				d = d.toString().replace(/,/gi,"-");
-				d = new Date(d).getTime() + (this.currentScrollFn() == 0 ? 86400000 : -1);
-				d = new Date(d).toISOString().substr(0,10).replace(/-/gi,"");
+			d.push(date.substr(0, 4));
+			d.push(date.substr(4, 2));
+			d.push(date.substr(6, 6));
+			d = d.toString().replace(/,/gi, "-");
+			d = new Date(d).getTime() + (this.currentScrollFn() == 0 ? 86400000 : -1);
+			d = new Date(d).toISOString().substr(0, 10).replace(/-/gi, "");
 			return d;
 		},
-		gamesFn : function(parameters) {
-			var date = typeof parameters.date != "undefined" ? parameters.date : new Date(new Date().getTime() - 86400000).toISOString().substr(0,10).replace(/-/gi,"");
+		gamesFn: function gamesFn(parameters) {
+			var date = typeof parameters.date != "undefined" ? parameters.date : new Date(new Date().getTime() - 86400000).toISOString().substr(0, 10).replace(/-/gi, "");
 			this.jsonpFn(this.gameUrl(1, date));
 			this.jsonpFn(this.gameUrl(2, date));
 			this.jsonpFn(this.gameUrl(3, date));
 		},
-		pathFn : function(path, event) {
+		pathFn: function pathFn(path, event) {
 			typeof event != "undefined" ? event.preventDefault() : "";
 			typeof path != "string" ? path = path.href : "";
-			if(this.popstate){
+			if (this.popstate) {
 				history.pushState("", "PushState - 1", path);
 				this.routeInit();
-			}else{
+			} else {
 				bom.location.href = path;
 			}
 		},
-		getThreadsFn : function(tag, parameters) {
+		getThreadsFn: function getThreadsFn(tag, parameters) {
 			var date = dom.getElementsByName("date"),
-				el = dom.getElementsByName("threads")[0];
-				date = date.length ? date[date.length-1].value*1 : this.jsonpFn(this.threadsUrl(tag, parameters.date));
-				if(el && this.currentScrollFn() == 0){
-					this.jsonpFn(this.threadsUrl(tag, parameters.date, null, true));
-				}else if(date == ((parameters.date*1)+1)){
-					this.jsonpFn(this.threadsUrl(tag, parameters.date));
-				}else if(!dom.getElementById("thread_none")){
-					this.scrollInit(1);
-				}
+			    el = dom.getElementsByName("threads")[0];
+			date = date.length ? date[date.length - 1].value * 1 : this.jsonpFn(this.threadsUrl(tag, parameters.date));
+			if (el && this.currentScrollFn() == 0) {
+				this.jsonpFn(this.threadsUrl(tag, parameters.date, null, true));
+			} else if (date == parameters.date * 1 + 1) {
+				this.jsonpFn(this.threadsUrl(tag, parameters.date));
+			} else if (!dom.getElementById("thread_none")) {
+				this.scrollInit(1);
+			}
 		},
-		notFoundFn : function(el, index) {
-			var elm = dom.getElementById(el.name+"_"+index);
-				elm.parentNode.removeChild(elm);
-			if(el.name == "infobox_image")
-				dom.getElementsByName(el.name)[0].checked = true;
+		notFoundFn: function notFoundFn(el, index) {
+			var elm = dom.getElementById(el.name + "_" + index);
+			elm.parentNode.removeChild(elm);
+			if (el.name == "infobox_image") dom.getElementsByName(el.name)[0].checked = true;
 		},
-		clearFn : function(){
+		clearFn: function clearFn() {
 			this.jsonpElement.innerHTML = "";
 		},
-		jsonpFn : function(url, callback) {
+		jsonpFn: function jsonpFn(url) {
 			var script = dom.createElement("script");
 			script.src = url;
 			script.onload = "forum.clearFn()";
 			this.jsonpElement.appendChild(script);
 		},
-		ajaxFn : function(url, method, data, type) {
+		ajaxFn: function ajaxFn(url, method, data, type) {
 			var xhr = bom.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-			xhr.onreadystatechange = function(e) {
-				if (e.target.readyState == 4 && e.target.status == 200){
-					var json = eval("("+e.target.responseText+")");
-					if(typeof type == "function"){
+			xhr.onreadystatechange = function (e) {
+				if (e.target.readyState == 4 && e.target.status == 200) {
+					var json = eval("(" + e.target.responseText + ")");
+					if (typeof type == "function") {
 						type(json);
-					}else{
+					} else {
 						forum[type](json);
 					}
 					return;
-				}else{
+				} else {
 					console.log(e);
 				}
 			};
 			xhr.open(method, url, true);
 			data ? xhr.send(data) : xhr.send();
 		},
-		oembedFn : function(el) {
+		oembedFn: function oembedFn(el) {
 			var url = typeof el.value != "undefined" ? el.value.match(this.regex.url) : el.textContent.match(this.regex.url);
-			if(url){
-				for(var i = 0, len = url.length; i < len; i++){
+			if (url) {
+				for (var i = 0, len = url.length; i < len; i++) {
 					var uri = url[i];
 					uri.indexOf("http") > 0 ? "" : uri = "https://" + uri;
 					this.jsonpElement.innerHTML = "<a id=\"a\" href=\"" + uri + "\"></a>";
 					var a = dom.getElementById("a");
-					var radio = dom.querySelector("[name=\"switch\"]:checked");
-					if(radio.dataset.request.indexOf(a.href) < 0){
+					var radio = dom.querySelector("[name='switch']:checked");
+					if (radio.dataset.request.indexOf(a.href) < 0) {
 						radio.dataset.request += a.href + ",";
 						if (a.hostname == "youtu.be") {
 							var id = a.pathname.replace("/", "");
 							radio.dataset.url += "https://www.youtube.com/embed/" + id + ",";
 							radio.dataset.img += "https://i.ytimg.com/vi/" + id + "/hqdefault.jpg,";
-						}else if(a.hostname == "www.youtube.com" || a.hostname == "m.youtube.com"){
+						} else if (a.hostname == "www.youtube.com" || a.hostname == "m.youtube.com") {
 							var id = a.search.replace("?v=", "");
 							radio.dataset.url += "https://www.youtube.com/embed/" + id + ",";
 							radio.dataset.img += "https://i.ytimg.com/vi/" + id + "/hqdefault.jpg,";
-						}else if(a.hostname == "vimeo.com"){
-							this.ajaxFn("https://vimeo.com/api/oembed.json?url=https://" + url, "GET", "", this.oembedCallback);
-						}else if(a.hostname == "soundcloud.com"){
+						} else if (a.hostname == "vimeo.com") {
+							this.ajaxFn("https://vimeo.com/api/oembed.json?url=https://" + url + "\"", "GET", "", this.oembedCallback);
+						} else if (a.hostname == "soundcloud.com") {
 							this.ajaxFn("https://soundcloud.com/oembed?url=" + uri + "&format=json", "GET", "", this.oembedCallback);
-						}else if(a.hostname == "www.slideshare.net"){
-							this.jsonpFn("https://www.slideshare.net/api/oembed/2?url=" + url + "&format=json&callback=forum.oembedCallback");
-						}else if(a.hostname == "gist.github.com"){
-							radio.dataset.url += url+",";
+						} else if (a.hostname == "www.slideshare.net") {
+							this.jsonpFn("https://www.slideshare.net/api/oembed/2?url=" + url + "&format=json&callback=this.oembedCallback");
+						} else if (a.hostname == "gist.github.com") {
+							radio.dataset.url += url + ",";
 							radio.dataset.img += "https://gist.github.com/fluidicon.png,";
-						}else if(a.hostname == "jsfiddle.net"){
-							radio.dataset.url += url+",";
+						} else if (a.hostname == "jsfiddle.net") {
+							radio.dataset.url += url + ",";
 							radio.dataset.img += "http://doc.jsfiddle.net/_images/homepage-sm.png,";
-						}else{
+						} else {
 							radio.dataset.url += url + ",";
 						}
 					}
 					a.remove();
 				}
-			}else{
-				var radio = dom.querySelector("[name=\"switch\"]:checked");
+			} else {
+				var radio = dom.querySelector("[name='switch']:checked");
 				radio.dataset.url = "";
 				radio.dataset.img = "";
 				radio.dataset.request = "";
 			}
 		},
-		autocompleteFn : function(keyword, len, area) {
+		autocompleteFn: function autocompleteFn(keyword, len, area) {
 			len > 0 || area ? this.jsonpFn(this.autocompleteUrl(keyword)) : "";
 		},
-		searchFn : function() {
-			var checked = dom.querySelector("input[name=\"keyword\"]:checked"),
-				check = checked ? checked.value : 0,
-				v = this.tagElement.textContent;
-			if(v.length > 0 || checked){
-				if(v != dom.title)
-					check ? this.utilFn(check) : this.utilFn(v);
-			}else{
+		searchFn: function searchFn() {
+			var checked = dom.querySelector("input[name='keyword']:checked"),
+			    check = checked ? checked.value : 0,
+			    v = this.tagElement.textContent;
+			if (v.length > 0 || checked) {
+				if (v != dom.title) check ? this.utilFn(check) : this.utilFn(v);
+			} else {
 				alert(this.lang.validation.keyword);
 				this.tagElement.innerHTML = "";
 				this.switchElement.checked = false;
 			}
 		},
-		keywordFocusFn : function(e) {
+		keywordFocusFn: function keywordFocusFn(e) {
 			var area = !(dom.getElementById("shortcut").textContent.length > 0),
-				keywords = dom.getElementsByName("keyword"),
-				keyword = this.tagElement.textContent,
-				len = keywords.length;
-			switch(e.which){
-				case 0 :
+			    keywords = dom.getElementsByName("keyword"),
+			    keyword = this.tagElement.textContent,
+			    len = keywords.length;
+			switch (e.which) {
+				case 0:
 					this.searchFn();
 					break;
-				case 8 :
+				case 8:
 					this.autocompleteFn(keyword, len, area);
 					break;
-				case 9 :
+				case 9:
 					this.tagElement.removeAttribute("contenteditable");
-					this.tagElement.setAttribute("contenteditable","true");
+					this.tagElement.setAttribute("contenteditable", "true");
 					break;
-				case 13 :
+				case 13:
 					this.searchFn();
 					break;
-				case 27 :
+				case 27:
 					this.shortcutElement.innerHTML = "";
 					break;
-				case 38 :
-					if(area){
+				case 38:
+					if (area) {
 						this.autocompleteFn(keyword, len, area);
-					}else{
-						var checked = keywords[len-1];
-							checked.checked = true;
-							checked.focus();
+					} else {
+						var checked = keywords[len - 1];
+						checked.checked = true;
+						checked.focus();
 					}
 					break;
-				case 40 :
+				case 40:
 					area ? this.autocompleteFn(keyword, len, area) : "";
-					if(len > 1){
+					if (len > 1) {
 						var checked = keywords[1];
-							checked.checked = true;
-							checked.focus();
+						checked.checked = true;
+						checked.focus();
 					}
 					break;
-				default :
+				default:
 					this.autocompleteFn(keyword, len, area);
 					break;
 			}
 		},
-		currentScrollFn : function(){
+		currentScrollFn: function currentScrollFn() {
 			return dom.body.scrollTop || dom.documentElement.scrollTop;
 		},
-		scrollFn : function(v) {
+		scrollFn: function scrollFn(v) {
 			var limit = dom.body.scrollHeight - dom.documentElement.clientHeight,
-				current = this.currentScrollFn(),
-				path, parameters = bom.location.pathname,
-				parameters = parameters ? this.locationFn(parameters) : "",
-				date = dom.getElementsByName("date");
-			if(current == 0){
-				if(parameters.tag){
-					path = "/" + parameters.tag + "/" + (date[0].value);
-				}else{
+			    current = this.currentScrollFn(),
+			    path,
+			    parameters = bom.location.pathname,
+			    parameters = parameters ? this.locationFn(parameters) : "",
+			    date = dom.getElementsByName("date");
+			if (current == 0) {
+				if (parameters.tag) {
+					path = "/" + parameters.tag + "/" + date[0].value;
+				} else {
 					path = this.prettyDateFn(date[0].value);
 				}
 				date ? this.pathFn(path) : "";
 				this.scrollInit(0);
 				this.loadingFn(1);
-			}else if(current >= limit){
-				if(parameters.tag){
+			} else if (current >= limit) {
+				if (parameters.tag) {
 					path = "/" + parameters.tag + "/" + (date[date.length - 1].value - 1);
-				}else{
+				} else {
 					path = this.prettyDateFn(date[date.length - 1].value);
 				}
 				date ? this.pathFn(path) : "";
@@ -430,136 +431,127 @@
 				this.loadingFn(1);
 			}
 		},
-		utilFn : function(keyword) {
+		utilFn: function utilFn(keyword) {
 			var checked = this.switchElement.checked;
 
-			if(keyword != undefined){
+			if (keyword != undefined) {
 				keyword = keyword.replace(/ /gi, "_");
 				this.pathFn("/" + keyword);
 				return;
-			}else if(!checked){
+			} else if (!checked) {
 				keyword = keyword.replace(/ /gi, "_");
 				this.pathFn("/" + keyword);
 				return;
-			}else if(checked){
+			} else if (checked) {
 				this.postFn();
 			}
 		},
-		closeFn : function() {
-			dom.querySelector("[name=\"switch\"]:checked").checked = false;
+		closeFn: function closeFn() {
+			dom.querySelector("[name='switch']:checked").checked = false;
 		},
-		modifyFn : function(id){
-			var el = dom.getElementById("switch"+id),
-				reply = dom.getElementById("reply"+id),
-				content = dom.querySelector("[for=\"switch"+id+"\"]").textContent;
-			if(el.dataset.mode != "post"){
+		modifyFn: function modifyFn(id) {
+			var el = dom.getElementById("switch" + id),
+			    reply = dom.getElementById("reply" + id),
+			    content = dom.querySelector("[for=\"switch" + id + "\"]").textContent;
+			if (el.dataset.mode != "post") {
 				el.dataset.mode = "post";
 				reply.innerHTML = "";
-			}else{
+			} else {
 				el.dataset.mode = "modify";
-				reply.innerHTML = content;
+				reply.textContent = content;
 				reply.focus();
 			}
 		},
-		replyFn : function(event, el, id) {
-			if(event.which == 13){
+		replyFn: function replyFn(event, el, id) {
+			if (event.which == 13) {
 				var content = el.textContent,
-					path = typeof this.tagElement.textContent != "undefined" ? this.tagElement.textContent : "",
-					el = dom.querySelector("[name=\"switch\"]:checked");
+				    path = typeof this.tagElement.textContent != "undefined" ? this.tagElement.textContent : "",
+				    el = dom.querySelector("[name='switch']:checked");
 				this.postRest(content, path, id);
 
-				setTimeout(function(){ el.innerHTML = "" }, 0);
+				setTimeout(function () {
+					el.innerHTML = "";
+				}, 0);
 			}
 		},
-		postFn : function() {
+		postFn: function postFn() {
 			var content = this.formElement.content.value;
 			var path = typeof this.tagElement.textContent != "undefined" ? this.tagElement.textContent : "";
 			this.postRest(content, path);
 		},
-		navFn : function(type) {
-			if(type){
+		navFn: function navFn(type) {
+			if (type) {
 				type == "Google" ? this.jsonpFn("https://apis.google.com/js/platform.js") : "";
-				var provider = new firebase.auth[type+"AuthProvider"]();
-				firebase.auth().signInWithRedirect(provider).then(function(result) {
-					var	token = result.credential.accessToken,
-						user = result.user;
-				}).catch(function(error) {
+				var provider = new firebase.auth[type + "AuthProvider"]();
+				firebase.auth().signInWithRedirect(provider).then(function (result) {
+					var token = result.credential.accessToken,
+					    user = result.user;
+				}).catch(function (error) {
 					var errorCode = error.code,
-						errorMessage = error.message,
-						email = error.email,
-						credential = error.credential;
+					    errorMessage = error.message,
+					    email = error.email,
+					    credential = error.credential;
 				});
-			}else{
+			} else {
 				localStorage.clear();
 				bom.location.href = "/";
 			}
 		},
-		dateFormatFn : function(time) {
-			var today = new Date().toISOString().substr(0,10).replace(/-/gi,""),
-				diff = (((new Date()).getTime() - time) / 1000);
+		dateFormatFn: function dateFormatFn(time) {
+			var today = new Date().toISOString().substr(0, 10).replace(/-/gi, ""),
+			    diff = (new Date().getTime() - time) / 1000;
 			diff = diff - 33000;
-			if(diff < 0) diff = 0;
+			if (diff < 0) diff = 0;
 			var day_diff = Math.floor(diff / 86400);
-			if ( isNaN(day_diff) || day_diff < 0 ) return;
-			return day_diff == 0 && (
-				diff < 60 && "now" ||
-				diff < 120 && "1 minute" ||
-				diff < 3600 && Math.floor( diff / 60 ) + "minute" ||
-				diff < 7200 && "1 hour" ||
-				diff < 86400 && Math.floor( diff / 3600 ) + "hour") ||
-				day_diff == 1 && "1days" ||
-				day_diff < 7 && day_diff + "days" ||
-				day_diff < 31 && Math.floor( day_diff / 7 ) + "weeks" ||
-				today
+			if (isNaN(day_diff) || day_diff < 0) return;
+			return day_diff == 0 && (diff < 60 && "now" || diff < 120 && "1 minute" || diff < 3600 && Math.floor(diff / 60) + "minute" || diff < 7200 && "1 hour" || diff < 86400 && Math.floor(diff / 3600) + "hour") || day_diff == 1 && "1days" || day_diff < 7 && day_diff + "days" || day_diff < 31 && Math.floor(day_diff / 7) + "weeks" || today;
 		},
-		ridFn : function() {
+		ridFn: function ridFn() {
 			return Math.random().toString(36).substring(20);
 		},
-		loadingFn : function(v, type) {
+		loadingFn: function loadingFn(v, type) {
 			var dom_body = dom.body;
 			v ? dom_body.className += " loading" : dom_body.className = dom_body.className.replace(" loading", "");
 		},
-
-	/**
-		* rest
-		* 
-	*/
-
-		postRest : function(content, path, id) {
-			if(!this.auth){
+		/**
+  	* rest
+  	* 
+  */
+		postRest: function postRest(content, path, id) {
+			if (!this.auth) {
 				alert(this.lang.validation.login);
-			}else if(!content.length){
+			} else if (!content.length) {
 				alert(this.lang.validation.content);
-			}else{
-				content = content.replace(/</gi,"&lt;");
+			} else {
+				content = content.replace(/</gi, "&lt;");
 				content = content.replace(/>/gi, "&gt;");
 				var root = dom.getElementsByName("thread"),
-					el = dom.querySelector("[name=\"switch\"]:checked"),
-					data = {
-						content : content,
-						date : new Date().getTime(),
-						profile : bom.localStorage.profile,
-						email : bom.localStorage.email,
-						name : bom.localStorage.name,
-						lang : this.lang.type,
-						url : [],
-						img : []
-					},
-					type = "";
+				    el = dom.querySelector("[name='switch']:checked"),
+				    data = {
+					content: content,
+					date: new Date().getTime(),
+					profile: bom.localStorage.profile,
+					email: bom.localStorage.email,
+					name: bom.localStorage.name,
+					lang: this.lang,
+					url: [],
+					img: []
+				},
+				    type = "";
 
-				if(el.dataset.mode == "post"){
+				if (el.dataset.mode == "post") {
 					type = "POST";
 					data.parent = id;
 					root.length > 0 ? data.root = root[0].id : "";
-				}else{
+				} else {
 					type = "PUT";
-					path = path+"/"+el.id.replace("switch", "");
+					path = path + "/" + el.id.replace("switch", "");
 				}
 				path = this.restUrl + path + ".json?auth=" + this.auth;
-				var url = el.dataset.url.slice(0,-1).split(","),
-					img = el.dataset.img.slice(0,-1).split(","),
-					request = el.dataset.request.slice(0,-1).split(",");
-				for(var i = 0, len = request.length; i < len; i++){
+				var url = el.dataset.url.slice(0, -1).split(","),
+				    img = el.dataset.img.slice(0, -1).split(","),
+				    request = el.dataset.request.slice(0, -1).split(",");
+				for (var i = 0, len = request.length; i < len; i++) {
 					data.content = data.content.replace(request[i], "");
 				}
 				url[0] != "" ? data.url = url : "";
@@ -569,179 +561,174 @@
 				this.ajaxFn(path, type, data, "firebaseCallback");
 			}
 		},
-		deleteRest : function(tag, id) {
+		deleteRest: function deleteRest(tag, id) {
 			var bool = confirm(this.lang.validation.delete);
 			this.deleteCallback.id = id;
-			bool ? this.ajaxFn(this.restUrl + tag + "/" + id + ".json?auth=" + this.auth, "DELETE", "", "deleteCallback") : "";
+			bool ? this.ajaxFn("\"" + this.restUrl + tag + "/" + id + ".json?auth=" + this.auth + "\"", "DELETE", "", "deleteCallback") : "";
 		},
-
-	/**
-		* oembed
-		* 
-	*/
-
-		youtubeOembed : function(id) {
-			dom.getElementById("media"+id).innerHTML += "<iframe src=\"https://www.youtube.com/embed/" + id + "?autoplay=1\" frameborder=\"0\"></iframe>";
+		/**
+  	* oembed
+  	* 
+  */
+		youtubeOembed: function youtubeOembed(id) {
+			dom.getElementById("media" + id).innerHTML += "<iframe src=\"https://www.youtube.com/embed/" + id + "?autoplay=1\" frameborder=\"0\"></iframe>";
 		},
-		defaultOembed : function(id, url) {
-			var el = dom.getElementById("media"+id);
-			if(url.indexOf("gist.github.com") >= 0){
+		defaultOembed: function defaultOembed(id, url) {
+			var el = dom.getElementById("media" + id);
+			if (url.indexOf("gist.github.com") >= 0) {
 				this.gistCallback.id = id;
 				this.jsonpFn("https://" + url + ".json?callback=this.gistCallback");
-			}else if(url.indexOf("jsfiddle.net") >= 0){
-				el.innerHTML += "<script src=\"https://" + url + "embed/\"></scr"+"ipt>";
+			} else if (url.indexOf("jsfiddle.net") >= 0) {
+				el.innerHTML += "<script src='https://" + url + "embed/'></scr" + "ipt>";
 				this.jsonpFn("https://" + url + "embed/");
-			}else{
-				var url = url.indexOf("youtube") >= 0 || url.indexOf("vimeo") >= 0  ? url + "?autoplay=1" : url;
+			} else {
+				var url = url.indexOf("youtube") >= 0 || url.indexOf("vimeo") >= 0 ? url + "?autoplay=1" : url;
 				el.innerHTML += "<iframe src=\"" + url + "\"></iframe>";
 			}
 		},
-
-	/**
-		* template
-		* 
-	*/
-
-		autocompleteTpl : function(keyword, json, num) {
+		/**
+  	* template
+  	* 
+  */
+		autocompleteTpl: function autocompleteTpl(keyword, json, num) {
 			var v = json[1][num].replace(keyword, "<span>" + keyword + "</span>");
 			return "<input onkeydown=\"forum.keywordFocusFn(event)\" id=\"keyword" + num + "\" type=\"radio\" name=\"keyword\" value=\"" + json[1][num].replace(/%20/gi, "_") + "\"><label for=\"keyword" + num + "\"><a href=\"/" + json[1][num] + "\" onclick=\"forum.pathFn(this)\">" + v + "</a></label>";
 		},
-		youtubeTpl : function(id) {
-			return "<a class=\"media\" id=\"media" + id + "\" onclick=\"window.youtubeOembed(\'" + id + "\')\"><img src=\"https://i.ytimg.com/vi/" + id + "/hqdefault.jpg\" alt=\"youtube\"></a>";
+		youtubeTpl: function youtubeTpl(id) {
+			return "<a class=\"media\" id=\"media" + id + "\" onclick=\"window.forum.youtubeOembed('" + id + "')\"><img src=\"https://i.ytimg.com/vi/" + id + "/hqdefault.jpg\" alt=\"youtube\"></a>";
 		},
-		oembedTpl : function(url, img, key) {
+		oembedTpl: function oembedTpl(url, img, key) {
 			var id = this.ridFn();
-			return "<a class=\"media " + key + "\" id=\"media" + id + "\"><img src=\"" + img + "\" alt=\"\" onclick=\"window.forum.defaultOembed(\'" + id + "\', \'" + url + "\')\"></a>";
+			return "<a class=\"media " + key + "\" id=\"media" + id + "\"><img src=\"" + img + "\" alt=\"\" onclick=\"window.forum.defaultOembed('" + id + "', '" + url + "')\"></a>";
 		},
-		newsTpl : function(pageid, title) {
-			return "<li name=\"news\"><a href=\"https://" + this.lang.type + ".wikinews.org/wiki/" + title + "?dpl_id=" + pageid + "\" target=\"_blank\" title=\"new window\">" + title + "</a></li>";
+		newsTpl: function newsTpl(pageid, title) {
+			return "<li name=\"news\"><a href=\"https://" + this.lang.type + ".wikinews.org/wiki/" + title + "?dpl_id=" + pageid + "\" target=\"_blank\" title=new window\">" + title + "</a></li>";
 		},
-		gameTpl : function(category, game, league, home, home_score, home_country, away, away_score, away_country, date, youtube, win, img) {
+		gameTpl: function gameTpl(category, game, league, home, home_score, home_country, away, away_score, away_country, date, youtube, win, img) {
 			var type = 0,
-				attr = typeof youtube != "undefined" ? "href=\"https://www.youtube.com/watch?v=" + youtube + "\" target=\"_blank\" title=\"new window\"" : "";
-			if(category == 1){
+			    attr = typeof youtube != "undefined" ? "href=\"https://www.youtube.com/watch?v=" + youtube + "\" target=\"_blank\" title=\"new window\"" : "";
+			if (category == 1) {
 				type = "football";
-			}else if(category == 2){
+			} else if (category == 2) {
 				type = "basketball";
-			}else if(category == 3){
+			} else if (category == 3) {
 				type = "baseball";
 			}
 
 			return "<div name=\"game\" class=\"game " + win + " " + league + " " + type + "\" " + img + "><a " + attr + " class=\"title\"><dl class=\"home\"><dt><strong class=\"name\">" + home + "</strong><span class=\"country\">" + home_country + "</span></dt><dd class=\"score\">" + home_score + "</dd></dl><dl class=\"away\"><dt><strong class=\"name\">" + away + "</strong><span class=\"country\">" + away_country + "</span></dt><dd class=\"score\">" + away_score + "</dd></dl></a><input type=\"hidden\" name=\"date\" value=\"" + date + "\"></div>";
 		},
-		infobox_imageTpl : function(key, value, num, checked) {
+		infobox_imageTpl: function infobox_imageTpl(key, value, num, checked) {
 			return "<label id=\"infobox_image_" + num + "\" for=\"infobox_img" + num + "\"><input id=\"infobox_image" + num + "\" type=\"radio\" name=\"infobox_image\" " + checked + "><img name=\"infobox_image\" onerror=\"forum.notFoundFn(this, " + num + ")\" src=\"http://commons.wikimedia.org/wiki/Special:Filepath/" + value + "\" alt=\"" + key + "\"></label>";
 		},
-		threadTpl : function(prop, data, img) {
+		threadTpl: function threadTpl(prop, data, img) {
 			img = typeof img != "undefined" ? "<div class=\"image\">" + img + "</div>" : "";
 			var tag = this.tagElement.textContent,
-				meta = "",
-			parent = typeof data.parent != "undefined" ? "<input name=\"parent\" type=\"hidden\" value=\"" + data.parent + "\">" : "",
-			root = typeof data.root != "undefined" ? "<input name=\"root\" type=\"hidden\" value=\"" + data.root + "\">" : "",
-			setting = data.email == localStorage.email ? "<a class=\"setting\" onclick=\"forum.modifyFn(\'" + prop + "\')\" name=\"modify\">modify</a><a class=\"setting\" onclick=\"forum.deleteRest(\'" + tag + "\', \'" + prop + "\')\" name=\"remove\">remove</a>" : "";
-			if(typeof data.url != "undefined"){
+			    meta = "",
+			    parent = typeof data.parent != "undefined" ? "<input name=\"parent\" type=\"hidden\" value=\"" + data.parent + "\">" : "",
+			    root = typeof data.root != "undefined" ? "<input name=\"root\" type=\"hidden\" value=\"" + data.root + "\">" : "",
+			    setting = data.email == localStorage.email ? "<a class=\"setting\" onclick=\"forum.modifyFn('" + prop + "')\" name=\"modify\">modify</a><a class=\"setting\" onclick=\"forum.deleteRest('" + tag + "', '" + prop + "')\" name=\"remove\">remove</a>" : "";
+			if (typeof data.url != "undefined") {
 				var len = data.url.length;
-				if(len > 0){
-					for(var i = 0; len > i; i++){
-						var tpl = data.img[i] ? this.oembedTpl(data.url[i], data.img[i], prop) : "<a class=\"link\" href=\"http://" + data.url[i] + "\" target=\"_blank\" title=\"new window\">#link" + (i + 1) + "</a>";
+				if (len > 0) {
+					for (var i = 0; len > i; i++) {
+						var tpl = data.img[i] ? forum.oembedTpl(data.url[i], data.img[i], prop) : "a class=\"link\" href=\"http://" + data.url[i] + "\" target=\"_blank\" title=\"new window\">#link" + (i + 1) + "</a>";
 						typeof tpl != "undefined" ? meta += tpl : "";
 					}
 				}
 			}
-			return meta + "<input id=\"switch" + prop + "\" name=\"switch\" type=\"radio\" data-mode=\"post\" data-request=\"\" data-url=\"\" data-img=\"\"><form action=\"javascript:this.replyFn(\'" + prop + "\')\" id=\"" + prop + "\" name=\"thread\"><input type=\"hidden\" name=\"lang\" value=\"" + data.lang + "\"><div class=\"info\"><div class=\"infobox\"><a href=\"/"+tag+"/" + data.email + "\" name=\"profile\" style=\"background-image:url(" + data.profile + ")\">" + data.name + "</a><a name=\"date\">" + this.dateFormatFn(data.date) + "</a>" + setting + "<a class=\"close\" onclick=\"window.forum.closeFn()\"><i class=\"alt\">close</i></a></div></div><label for=\"switch" + prop + "\" name=\"content\">" + data.content + "</label><div id=\"reply"+prop+"\" title=\""+this.lang.title.reply+"\" class=\"reply\" contenteditable onkeyup=\"window.forum.oembedFn(this)\" onkeydown=\"forum.replyFn(event, this, \'" + prop + "\')\"></div>" + parent + root + img + "</form>";
+			return meta + "<input id=\"switch" + prop + "\" name=\"switch\" type=\"radio\" data-mode=\"post\" data-request=\"\" data-url=\"\" data-img=\"\"> <form action=\"javascript:this.replyFn('" + prop + "')\" id=\"" + prop + "\" name=\"thread\"><input type=\"hidden\" name=\"lang\" value=\"" + data.lang + "\"><div class=\"info\"><div class=\"infobox\"><a href=\"/" + tag + "/" + data.email + "\" name=\"profile\" style=\"background-image:url(" + data.profile + ")\">" + data.name + "</a><a name=\"date\">" + this.dateFormatFn(data.date) + "</a>" + setting + "<a class=\"close\" onclick=\"window.forum.closeFn()\"><i class=\"alt\">close</i></a></div></div><label for=\"switch" + prop + "\" name=\"content\">" + data.content + "</label><div id=\"reply" + prop + "\" title=\"" + this.lang.title.reply + "\" class=\"reply\" contenteditable onkeyup=\"window.forum.oembedFn(this)\" onkeydown=\"forum.replyFn(event, this, '" + prop + "')\"></div>" + parent + root + img + "</form>";
 		},
-		threadsTpl : function(json, key, tag, img) {
+		threadsTpl: function threadsTpl(json, key, tag, img) {
 			var thread_key = typeof json[key].root != "undefined" ? json[key].root + "#" + key : key;
-			return "<form name=\"threads\" " + (typeof json[key].root == "undefined" ? "class=\"root\"" : "") + " action=\"javascript:fetchRecord(this)\"><input name=\"root\" type=\"hidden\" value=\"" + json[key].root + "\"><input name=\"parent\" type=\"hidden\" value=\"" + json[key].parent + "\"><input name=\"date\" type=\"hidden\" value=\"" + json[key].date + "\">" + img + "<div id=\"content" + key + "\" class=\"content\"><div class=\"info\"><a class=\"profile\" href=\"/" + tag + "/" + json[key].email + "\" onclick=\"forum.pathFn(this)\"><img class=\"profile_img\" alt=\"" + json[key].name + "\" src=\"https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg\"><span class=\"name\">" + json[key].name + "</span></a><span class=\"date\">" + this.dateFormatFn(json[key].date) + "</span></div><a class=\"txt\" href=\"/" + tag + "/" + thread_key + "\" onclick=\"forum.pathFn(this, event)\" contenteditable=\"false\">" + json[key].content + "</a></div></form>";
+			return "<form name=\"threads\" " + (typeof json[key].root == "undefined" ? "class='root'" : "") + " action=\"javascript:fetchRecord(this)\"><input name=\"root\" type=\"hidden\" value=\"" + json[key].root + "\"><input name=\"parent\" type=\"hidden\" value=\"" + json[key].parent + "\"><input name=\"date\" type=\"hidden\" value=\"" + json[key].date + "\">" + img + "<div id=\"content" + key + "\" class=\"content\"><div class=\"info\"><a class=\"profile\" href=\"/" + tag + "/" + json[key].email + "\" onclick=\"forum.pathFn(this)\"><img class=\"profile_img\" alt=\"" + json[key].name + "\" src=\"" + json[key].profile + "\"><span class=\"name\">" + json[key].name + "</span></a><span class=\"date\">" + this.dateFormatFn(json[key].date) + "</span></div><a class=\"txt\" href=\"/" + tag + "/" + thread_key + "\" onclick=\"forum.pathFn(this, event)\" contenteditable=\"false\">" + json[key].content + "</a></div></form>";
 		},
-		thread_mediaTpl : function(json, key, num) {
+		thread_mediaTpl: function thread_mediaTpl(json, key, num) {
 			return "<a class=\"thumnail\" id=\"media" + key + "\"><img src=\"" + json[key].img[num] + "\" alt=\"thumnail\"></a>";
 		},
-
-	/**
-		* callback
-		* 
-	*/
-		gameCallback : function(json) {
+		/**
+  	* callback
+  	* 
+  */
+		gameCallback: function gameCallback(json) {
 			var body = "",
-				entry = json.feed.entry,
-				category = json.feed.title.$t;
+			    entry = json.feed.entry,
+			    category = json.feed.title.$t;
 
-			if(typeof entry != "undefined"){
+			if (typeof entry != "undefined") {
 				var games = dom.getElementById("games");
-				for (var i = 0;  i <= entry.length; i++) {
-					if(typeof entry[i] != "undefined"){
+				for (var i = 0; i <= entry.length; i++) {
+					if (typeof entry[i] != "undefined") {
 						var game = entry[i].content.$t,
-						game = game.split(","),
-						league = eval("{"+entry[i].title.$t+"}"),
-						home = eval("{"+game[0]+"}"),
-						home_score = eval("{"+game[1]+"}"),
-						home_country = eval("{"+game[2]+"}"),
-						away = eval("{"+game[3]+"}"),
-						away_score = eval("{"+game[4]+"}"),
-						away_country = eval("{"+game[5]+"}"),
-						date = eval("{"+game[6]+"}"),
-						youtube = eval("{"+game[7]+"}"),
-						win = away_score < home_score ? "home" : "away",
-						img = typeof youtube != "undefined" ? "style=\"background-image:url(https://i.ytimg.com/vi/" + youtube + "/hqdefault.jpg)\"" : "";
-						body += this.gameTpl(category, game, league, home, home_score, home_country, away, away_score, away_country, date, youtube, win, img);
+						    game = game.split(","),
+						    league = eval("{" + entry[i].title.$t + "}"),
+						    home = eval("{" + game[0] + "}"),
+						    home_score = eval("{" + game[1] + "}"),
+						    home_country = eval("{" + game[2] + "}"),
+						    away = eval("{" + game[3] + "}"),
+						    away_score = eval("{" + game[4] + "}"),
+						    away_country = eval("{" + game[5] + "}"),
+						    date = eval("{" + game[6] + "}"),
+						    youtube = eval("{" + game[7] + "}"),
+						    win = away_score < home_score ? "home" : "away",
+						    img = typeof youtube != "undefined" ? "style=\"background-image:url(https://i.ytimg.com/vi/" + youtube + "/hqdefault.jpg)\"" : "";
+
+						body += forum.gameTpl(category, game, league, home, home_score, home_country, away, away_score, away_country, date, youtube, win, img);
 					}
 				}
 				var el = document.getElementsByName("game")[0];
-				if(el && this.currentScrollFn() == 0){						
+				if (el && this.currentScrollFn() == 0) {
 					el.outerHTML = body + el.outerHTML;
-				}else{
+				} else {
 					games.innerHTML += body;
 				}
 				this.scrollInit(1);
 				this.loadingFn(0);
 			}
 		},
-		newsCallback : function(json) {
+		newsCallback: function newsCallback(json) {
 			var body = "";
-			if(json.query.recentchanges.length){
+			if (json.query.recentchanges.length) {
 				var list = json.query.recentchanges;
-				for(var i = 0; i < 5; i++){
+				for (var i = 0; i < 5; i++) {
 					var pageid = list[i].pageid,
-						title = list[i].title;
-					if(body.indexOf(title) < 0){
-						body += this.newsTpl(pageid, title);
+					    title = list[i].title;
+					if (body.indexOf(title) < 0) {
+						body += forum.newsTpl(pageid, title);
 					}
 				}
 				this.newsElement.innerHTML = "<ul class=\"news\">" + body + "</ul>";
 			}
 		},
-		infoboxCallback : function(json) {
-			var dl ="",
-				keywords = "",
-				uri = "",
-				images = "",
-				infobox_image = "",
-				json = json["results"]["bindings"],
-				property = "dbpedia.org/property/";
+		infoboxCallback: function infoboxCallback(json) {
+			var dl = "",
+			    keywords = "",
+			    uri = "",
+			    images = "",
+			    infobox_image = "",
+			    json = json["results"]["bindings"],
+			    property = "dbpedia.org/property/";
 
-			for(var i in json){
-				var key = json[i].k.value.replace("http://ko.dbpedia.org/property/",""),
-				value = json[i].o.value.replace("http://ko.dbpedia.org/resource/","");
+			for (var i in json) {
+				var key = json[i].k.value.replace("http://ko.dbpedia.org/property/", ""),
+				    value = json[i].o.value.replace("http://ko.dbpedia.org/resource/", "");
 				value = value.replace(/_/gi, " ");
-				if(json[i].k.value.indexOf("http://dbpedia.org/ontology/wikiPageWikiLink") >= 0)
-					if(value.indexOf(".svg") >= 0 || value.indexOf(".jpg") >= 0 || value.indexOf(".JPG") >= 0 || value.indexOf(".png") >= 0 || value.indexOf(".PNG") >= 0 || value.indexOf(".SVG") >= 0){
-						images += this.infobox_imageTpl(key, value.replace("파일:",""), i);
-					}else if(json[i].k.value.indexOf("wikiPageWikiLink") >= 0){
-						keywords += "<a href=\"/" + value + "\">" + value + "</a>";
-					}
-				if(key == "url" || ((key == "주소" || key == "웹사이트") && json[i].o["type"] == "uri")){
+				if (json[i].k.value.indexOf("http://dbpedia.org/ontology/wikiPageWikiLink") >= 0) if (value.indexOf(".svg") >= 0 || value.indexOf(".jpg") >= 0 || value.indexOf(".JPG") >= 0 || value.indexOf(".png") >= 0 || value.indexOf(".PNG") >= 0 || value.indexOf(".SVG") >= 0) {
+					images += forum.infobox_imageTpl(key, value.replace("파일:", ""), i);
+				} else if (json[i].k.value.indexOf("wikiPageWikiLink") >= 0) {
+					keywords += "<a href=\"/" + value + "\">" + value + "</a>";
+				}
+				if (key == "url" || (key == "주소" || key == "웹사이트") && json[i].o["type"] == "uri") {
 					uri = value;
 				}
-				if(json[i].k.value.indexOf(property) >= 0 && json[i].o["xml:lang"]){
-					if(dl.indexOf("<dt>" + key + "</dt>") >= 0){
+				if (json[i].k.value.indexOf(property) >= 0 && json[i].o["xml:lang"]) {
+					if (dl.indexOf("<dt>" + key + "</dt>") >= 0) {
 						dl += "<dt style=\"opacity:0\">" + key + "</dt><dd>" + value + "</dd>";
-					}else if(value == this.tagElement.textContent){
-							dl += "<dt>" + key + "</dt><dd><a target=\"_blank\" id=\"domain_uri\">" + value + "</a></dd>";
-					}else if(value.indexOf(".svg") >= 0 || value.indexOf(".jpg") >= 0 || value.indexOf(".JPG") >= 0 || value.indexOf(".png") >= 0 || value.indexOf(".PNG") >= 0 || value.indexOf(".SVG") >= 0){
-							infobox_image != "" ? infobox_image += this.infobox_imageTpl(key, value, i) : infobox_image += this.infobox_imageTpl(key, value, i, "checked");
-					}else{
-							dl += "<dt>" + key + "</dt><dd>" + value + "</dd>";
+					} else if (value == this.tagElement.textContent) {
+						dl += "<dt>" + key + "</dt><dd><a target=\"_blank\" id=\"domain_uri\">" + value + "</a></dd>";
+					} else if (value.indexOf(".svg") >= 0 || value.indexOf(".jpg") >= 0 || value.indexOf(".JPG") >= 0 || value.indexOf(".png") >= 0 || value.indexOf(".PNG") >= 0 || value.indexOf(".SVG") >= 0) {
+						infobox_image != "" ? infobox_image += forum.infobox_imageTpl(key, value, i) : infobox_image += forum.infobox_imageTpl(key, value, i, "checked");
+					} else {
+						dl += "<dt>" + key + "</dt><dd>" + value + "</dd>";
 					}
 				}
 			}
@@ -749,116 +736,116 @@
 			dl.length > 0 ? this.infoboxElement.innerHTML = "<label for=\"more_images\"><span>more</span></label><h2>" + infobox_image + images + "</h2><dl>" + dl + "</dl>" : this.infoboxElement.innerHTML = "";
 			uri.length > 0 ? dom.getElementById("domain_uri").href = uri : "";
 		},
-		autocompleteCallback : function(json) {
+		autocompleteCallback: function autocompleteCallback(json) {
 			var body = "";
 			var keyword = this.tagElement.textContent;
-			if(json.length){
-				for(var i = 0, len = json[1].length; i < len; i++){
-					body += this.autocompleteTpl(keyword, json, i);
+			if (json.length) {
+				for (var i = 0, len = json[1].length; i < len; i++) {
+					body += forum.autocompleteTpl(keyword, json, i);
 				}
 				this.shortcutElement.innerHTML = "<div class=\"autocomplete\">" + body + "</div>";
-			}else{
+			} else {
 				this.shortcutElement.innerHTML = "";
 			}
 		},
-		firebaseCallback : function(json) {
-			if(typeof json != "undefined"){
+		firebaseCallback: function firebaseCallback(json) {
+			if (typeof json != "undefined") {
 				var tpl = "",
-					img = "",
-					key = json.name,
-					tag = this.tagElement.textContent,
-					data = eval("({\""+key+"\" : "+this.firebaseCallback.data+"})");
-				if(typeof data.img != "undefined")
-					for(var g = 0, len2 = data.img.length-1; g <= len2; g++){
-						img += this.thread_mediaTpl(json, key, g);
-					}
-				if(dom.body.className == "thread"){
+				    img = "",
+				    key = json.name,
+				    tag = this.tagElement.textContent,
+				    data = eval("({'" + key + "' : " + this.firebaseCallback.data + "})");
+				if (typeof data.img != "undefined") for (var g = 0, len2 = data.img.length - 1; g <= len2; g++) {
+					img += forum.thread_mediaTpl(json, key, g);
+				}
+				if (dom.body.className == "thread") {
 					var forms = this.threadElement.innerHTML,
-						radio = dom.querySelector("[name=\"switch\"]:checked"),
-						id = radio.id.replace("switch", ""),
-						el = dom.getElementById(id);
+					    radio = dom.querySelector("[name='switch']:checked"),
+					    id = radio.id.replace("switch", ""),
+					    el = dom.getElementById(id);
 					radio.checked = false;
-					tpl = this.threadTpl(key, data[key], img);
+					tpl = forum.threadTpl(key, data[key], img);
 					el ? el.outerHTML += tpl : this.threadElement.innerHTML = tpl;
-				}else{
+				} else {
 					var el = dom.getElementsByName("threads")[0];
-					tpl = this.threadsTpl(data, key, tag, img);
-					el ? el.outerHTML = tpl+el.outerHTML : this.threadsElement.innerHTML = tpl;
+					tpl = forum.threadsTpl(data, key, tag, img);
+					el ? el.outerHTML = tpl + el.outerHTML : this.threadsElement.innerHTML = tpl;
 				}
 				this.formElement.content.value = "";
 				delete this.firebaseCallback.data;
 			}
 		},
-		deleteCallback : function(json) {
-			if(json === null){
+		deleteCallback: function deleteCallback(json) {
+			if (json === null) {
 				var keyword = this.tagElement.textContent,
-					id = this.deleteCallback.id,
-					form = dom.getElementById(id),
-					_switch = dom.getElementById("switch" + id),
-					media = dom.querySelectorAll("." + id),
-					contents = dom.getElementById("content" + id);
-					form ? form.remove() : "";
-					contents ? contents.remove() : "";
-					_switch ? _switch.remove() : "";
+				    id = this.deleteCallback.id,
+				    form = dom.getElementById(id),
+				    _switch = dom.getElementById("switch" + id),
+				    media = dom.querySelectorAll("." + id),
+				    contents = dom.getElementById("content" + id);
+				form ? form.remove() : "";
+				contents ? contents.remove() : "";
+				_switch ? _switch.remove() : "";
 
-					if(media.length){
-						for(var i = 0, len = media.length; i < len; i++){
-							media[i].remove();
-						}
+				if (media.length) {
+					for (var i = 0, len = media.length; i < len; i++) {
+						media[i].remove();
 					}
-					var len = this.threadElement.innerHTML.trim();
-					len.length == 0 ? this.utilFn(keyword) : "";
+				}
+				var len = this.threadElement.innerHTML.trim();
+				len.length == 0 ? this.utilFn(keyword) : "";
 				alert(this.lang.complete.delete);
 				delete this.deleteCallback.id;
 			}
 		},
-		threadsCallback : function(json) {
-			if(json){
+		threadsCallback: function threadsCallback(json) {
+			if (json) {
 				var body = "",
-					parameters = bom.location.pathname,
-					parameters = parameters ? this.locationFn(parameters) : "",
-					tag = parameters.tag,
-					keys = Object.keys(json).sort().reverse(),
-					el = dom.getElementsByName("threads")[0];
+				    parameters = bom.location.pathname,
+				    parameters = parameters ? this.locationFn(parameters) : "",
+				    tag = parameters.tag,
+				    keys = Object.keys(json).sort().reverse(),
+				    el = dom.getElementsByName("threads")[0];
 
-				for(var i = 0, len1 = keys.length; i < len1; i++){
+				for (var i = 0, len1 = keys.length; i < len1; i++) {
 					var key = keys[i],
-						img = "",
-						content = "";
-					if(typeof json[key].img != "undefined")
-						for(var g = 0, len2 = json[key].img.length-1; g <= len2; g++){
-							img += this.thread_mediaTpl(json, key, g);
-						}
-					body += this.threadsTpl(json, key, tag, img);
+					    img = "",
+					    content = "";
+					if (typeof json[key].img != "undefined") for (var g = 0, len2 = json[key].img.length - 1; g <= len2; g++) {
+						img += forum.thread_mediaTpl(json, key, g);
+					}
+					body += forum.threadsTpl(json, key, tag, img);
 				}
-				if(el && this.currentScrollFn() == 0){
-					el.outerHTML = body+el.outerHTML;
-				}else if(typeof parameters.user == "undefined"){
+
+				if (el && this.currentScrollFn() == 0) {
+					el.outerHTML = body + el.outerHTML;
+				} else if (typeof parameters.user == "undefined") {
 					this.threadsElement.innerHTML += body;
 					this.scrollInit(1);
-				}else{
+				} else {
 					this.threadsElement.innerHTML = body;
 				}
 				this.loadingFn(0);
-			}else{
+			} else {
 				this.scrollInit(0);
 				this.loadingFn(0);
 				!dom.getElementById("thread_none") ? this.threadsElement.innerHTML += "<div id=\"thread_none\">" + this.lang.status.none + "</div>" : "";
 			}
 		},
-		threadCallback : function(json) {
-			var date, parameters = bom.location.pathname,
-				parameters = this.locationFn(parameters),
-				id = parameters.id,
-				tag = parameters.tag;
-			if(typeof json.name != "undefined"){
+		threadCallback: function threadCallback(json) {
+			var date,
+			    parameters = bom.location.pathname,
+			    parameters = this.locationFn(parameters),
+			    id = parameters.id,
+			    tag = parameters.tag;
+			if (typeof json.name != "undefined") {
 				var key = "";
-				if(typeof json.root == "undefined"){
+				if (typeof json.root == "undefined") {
 					var map = json;
 					json = {};
 					json[id] = map;
 					key = id;
-				}else{
+				} else {
 					key = json.root;
 					this.jsonpFn(this.rootUrl(key));
 				}
@@ -866,58 +853,51 @@
 			}
 
 			var keys = Object.keys(json).sort();
-			for(var i = 0, len1 = keys.length; i < len1; i++){
+			for (var i = 0, len1 = keys.length; i < len1; i++) {
 				var key = keys[i],
-					img = "",
-					content = "";
-				if(typeof json[key].img != "undefined"){
-					for(var g = 0, len2 = json[key].img.length-1; g <= len2; g++){
-						img += this.thread_mediaTpl(json, key, g);
+				    img = "",
+				    content = "";
+				if (typeof json[key].img != "undefined") {
+					for (var g = 0, len2 = json[key].img.length - 1; g <= len2; g++) {
+						img += forum.thread_mediaTpl(json, key, g);
 					}
 				}
-				if(typeof json[key].parent != "undefined"){
-					dom.getElementById(json[key].parent).outerHTML += this.threadTpl(key, json[key], img);
-				}else{
-					this.threadElement.innerHTML += this.threadTpl(key, json[key], img);
+				if (typeof json[key].parent != "undefined") {
+					dom.getElementById(json[key].parent).outerHTML += forum.threadTpl(key, json[key], img);
+				} else {
+					this.threadElement.innerHTML += forum.threadTpl(key, json[key], img);
 				}
 			}
 		},
-		oembedCallback : function(json) {
+		oembedCallback: function oembedCallback(json) {
 			this.jsonpElement.innerHTML += json.html;
-			var radio = dom.querySelector("[name=\"switch\"]:checked"),
-				iframe = this.jsonpElement.getElementsByTagName("iframe");
-			radio.dataset.url += iframe[0].src+",";
-			radio.dataset.img += json.thumbnail_url+",";
-			iframe[0].remove();	
+			var radio = dom.querySelector("[name='switch']:checked"),
+			    iframe = this.jsonpElement.getElementsByTagName("iframe");
+			radio.dataset.url += iframe[0].src + ",";
+			radio.dataset.img += json.thumbnail_url + ",";
+			iframe[0].remove();
 		},
-		gistCallback : function(json) {
+		gistCallback: function gistCallback(json) {
 			var self = this.gistCallback,
-				el = dom.getElementById("media"+self.id);
+			    el = dom.getElementById("media" + self.id);
 			el.innerHTML += "<link rel=\"stylesheet\" href=\"" + json.stylesheet + "\">" + json.div;
 			delete self["id"];
 		},
-	/**
-		* error
-		* 
-	*/
-		threadError : function() {
-			
-		},
-		threadsError : function() {
+		/**
+  	* Error
+  	* 
+  */
+		threadError: function threadError() {},
+		threadsError: function threadsError() {},
+		homeError: function homeError() {},
+		mediaError: function mediaError() {}
+	};
 
-		},
-		homeError : function() {
-
-		},
-		mediaError : function() {
-			
-		}
-	}
-	
 	var n = navigator,
-	uAgent = n.userAgent.toLowerCase(),
-	type = n.appName,
-	lang = (type=="Netscape") ? navigator.language : lang = navigator.userLanguage;
-	dom.documentElement.lang = lang = lang.substr(0,2);
+	    uAgent = n.userAgent.toLowerCase(),
+	    type = n.appName,
+	    lang = type == "Netscape" ? navigator.language : lang = navigator.userLanguage;
+	dom.documentElement.lang = lang = lang.substr(0, 2);
+
 	forum.jsonpFn("/lang/" + lang + ".js");
 })(window, document);

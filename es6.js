@@ -210,7 +210,7 @@
                             if(p[i].length == 8 && typeof eval(p[i]) === "number"){
                                 path.date = p[1]*1;
                             }else if(p[i].match(this.regex.email)){
-                                path.email = p[i];
+                                path.user = p[i];
                             }else{
                                 path.id = p[i];
 							}
@@ -594,7 +594,7 @@
 	*/
 		autocompleteTpl : function(keyword, json, num) {
 			var v = json[1][num].replace(keyword, `<span>${keyword}</span>`);
-			return `<input onkeydown="forum.keywordFocusFn(event)" id="keyword${num}" type="radio" name="keyword" value="${json[1][num].replace(/%20/gi, "_")}"><label for="keyword${num}"><a href="/${json[1][num]}" onclick="forum.pathFn(this)">${v}</a></label>`;
+			return `<input onkeydown="forum.keywordFocusFn(event)" id="keyword${num}" type="radio" name="keyword" value="${json[1][num].replace(/%20/gi, "_")}"><label for="keyword${num}"><a href="/${json[1][num]}" onclick="forum.pathFn(this,event)">${v}</a></label>`;
 		},
 		youtubeTpl : function(id) {
 			return `<a class="media" id="media${id}" onclick="window.forum.youtubeOembed('${id}')"><img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="youtube"></a>`;
@@ -642,7 +642,7 @@
 		},
 		threadsTpl : function(json, key, tag, img) {
 			var thread_key = typeof json[key].root != "undefined" ? json[key].root + "#" + key : key;
-			return `<form name="threads" ${(typeof json[key].root == "undefined" ? "class='root'" : "")} action="javascript:fetchRecord(this)"><input name="root" type="hidden" value="${json[key].root}"><input name="parent" type="hidden" value="${json[key].parent}"><input name="date" type="hidden" value="${json[key].date}">${img}<div id="content${key}" class="content"><div class="info"><a class="profile" href="/${tag}/${json[key].email}" onclick="forum.pathFn(this)"><img class="profile_img" alt="${json[key].name}" src="${json[key].profile}"><span class="name">${json[key].name}</span></a><span class="date">${this.dateFormatFn(json[key].date)}</span></div><a class="txt" href="/${tag}/${thread_key}" onclick="forum.pathFn(this, event)" contenteditable="false">${json[key].content}</a></div></form>`;
+			return `<form name="threads" ${(typeof json[key].root == "undefined" ? "class='root'" : "")} action="javascript:fetchRecord(this)"><input name="root" type="hidden" value="${json[key].root}"><input name="parent" type="hidden" value="${json[key].parent}"><input name="date" type="hidden" value="${json[key].date}">${img}<div id="content${key}" class="content"><div class="info"><a class="profile" href="/${tag}/${json[key].email}" onclick="forum.pathFn(this, event)"><img class="profile_img" alt="${json[key].name}" src="${json[key].profile}"><span class="name">${json[key].name}</span></a><span class="date">${this.dateFormatFn(json[key].date)}</span></div><a class="txt" href="/${tag}/${thread_key}" onclick="forum.pathFn(this, event)" contenteditable="false">${json[key].content}</a></div></form>`;
 		},
 		thread_mediaTpl : function(json, key, num) {
 			return `<a class="thumnail" id="media${key}"><img src="${json[key].img[num]}" alt="thumnail"></a>`;
@@ -821,7 +821,7 @@
 						}
 					body += forum.threadsTpl(json, key, tag, img);
 				}
-
+				console.log(parameters);
 				if(el && this.currentScrollFn() == 0){
 					el.outerHTML = body+el.outerHTML;
 				}else if(typeof parameters.user == "undefined"){

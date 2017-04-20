@@ -1,5 +1,3 @@
-"use strict";
-
 /**
 	* Copyright (c) 2016 forum.red Corp.
 	* forum.red projects are licensed under the MIT license
@@ -8,10 +6,10 @@
 	"use strict;";
 
 	bom.forum = {
-		/**
-  	* option
-  	* 
-  */
+	/**
+		* option
+		* 
+	*/
 		lang: {},
 		popstate: typeof bom.onpopstate != "undefined",
 		regex: {
@@ -19,22 +17,22 @@
 			email: /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i
 		},
 		restUrl: "https://fora.firebaseio.com/tag/",
-		autocompleteUrl: function autocompleteUrl(keyword) {
+		autocompleteUrl: function(keyword) {
 			return "http://" + this.lang.type + ".wikipedia.org/w/api.php?action=opensearch&limit=10&format=json&utf8=1&callback=forum.autocompleteCallback&search=" + keyword;
 		},
-		gameUrl: function gameUrl(type, date) {
+		gameUrl: function(type, date) {
 			return "https://spreadsheets.google.com/feeds/list/1-JVlP9YIwC2DydGZvAtOSmRE-BhN32IRK8g6AfchcQU/" + type + "/public/basic?alt=json-in-script&sq=date=" + date + "&callback=forum.gameCallback";
 		},
-		newsUrl: function newsUrl() {
+		newsUrl: function() {
 			return "https://" + this.lang.type + ".wikinews.org/w/api.php?action=query&format=json&list=recentchanges&redirects=1&utf8=1&rcdir=newer&rcnamespace=0&rclimit=100&callback=forum.newsCallback";
 		},
-		infoboxUrl: function infoboxUrl(tag) {
+		infoboxUrl: function(tag) {
 			return "http://" + this.lang.type + ".dbpedia.org/sparql?default-graph-uri=http://" + this.lang.type + ".dbpedia.org&query=select distinct * where { <http://" + this.lang.type + ".dbpedia.org/resource/" + tag.replace(/%20/gi, "_") + "> ?k ?o . }&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on&callback=forum.infoboxCallback";
 		},
-		threadUrl: function threadUrl(tag, id) {
+		threadUrl: function(tag, id) {
 			return "" + this.restUrl + tag + "/" + id + ".json?callback=forum.threadCallback";
 		},
-		threadsUrl: function threadsUrl(tag, date, user, back) {
+		threadsUrl: function(tag, date, user, back) {
 			var parameter = "";
 			if (back) {
 				parameter = (date ? "startAt=" + date + "&" : "") + "orderBy=\"date\"&limitToLast=10";
@@ -45,16 +43,16 @@
 			}
 			return "" + this.restUrl + tag + ".json?" + parameter + "&callback=forum.threadsCallback";
 		},
-		rootUrl: function rootUrl(tag, root) {
+		rootUrl: function(tag, root) {
 			return "" + this.restUrl + tag + "/" + root + ".json/?callback=forum.threadCallback";
 		},
-		branchUrl: function branchUrl(tag, root, date) {
+		branchUrl: function(tag, root, date) {
 			return "" + this.restUrl + tag + ".json?equalTo=\"" + root + "\"&orderBy=\"root\"&callback=forum.threadCallback";
 		},
-		/**
-  	* element
-  	* 
-  */
+	/**
+  		* element
+  		* 
+	*/
 		jsonpElement: dom.getElementById("jsonp"),
 		shortcutElement: dom.getElementById("shortcut"),
 		switchElement: dom.getElementById("switch"),
@@ -70,11 +68,11 @@
 		asideElement: dom.getElementById("aside"),
 		keywordsElement: dom.getElementById("keywords"),
 		infoboxElement: dom.getElementById("infobox"),
-		/**
-  	* init
-  	* 
-  */
-		sesstionInit: function sesstionInit() {
+	/**
+		* init
+		* 
+	*/
+		sesstionInit: function() {
 			var script = dom.createElement("script");
 			script.src = "//www.gstatic.com/firebasejs/live/3.0/firebase.js";
 			script.onload = function () {
@@ -102,12 +100,12 @@
 			};
 			this.jsonpElement.appendChild(script);
 		},
-		scrollInit: function scrollInit(bool) {
+		scrollInit: function(bool) {
 			bool ? bom.onscroll = function () {
 				bom.forum.scrollFn();
 			} : bom.onscroll = null;
 		},
-		routeInit: function routeInit() {
+		routeInit: function() {
 			var parameters = bom.location.pathname,
 			    parameters = parameters ? this.locationFn(parameters) : "";
 
@@ -121,14 +119,14 @@
 				this.homePath(parameters);
 			}
 		},
-		homeInit: function homeInit() {
+		homeInit: function() {
 			dom.body.removeAttribute("class");
 			dom.title = "forum.red";
 			this.threadElement.innerHTML = "";
 			this.threadsElement.innerHTML = "";
 			this.tagElement.textContent = "";
 		},
-		threadInit: function threadInit(tag) {
+		threadInit: function(tag) {
 			var v = tag.replace("_", " ");
 			v = decodeURIComponent(v);
 			dom.title = v;
@@ -137,7 +135,7 @@
 			this.threadElement.innerHTML = "";
 			this.scrollInit(0);
 		},
-		threadsInit: function threadsInit(tag) {
+		threadsInit: function(tag) {
 			tag = tag.replace("_", " ");
 			this.shortcutElement.innerHTML = "";
 			this.threadElement.innerHTML = "";
@@ -145,14 +143,14 @@
 			this.tagElement.textContent = tag;
 			dom.body.className = "threads";
 		},
-		langInit: function langInit(json) {
+		langInit: function(json) {
 			this.lang = json;
 		},
-		/**
-  	* route
-  	* 
-  */
-		homePath: function homePath(parameters) {
+	/**
+		* route
+		* 
+	*/
+		homePath: function(parameters) {
 			!this.newsElement.innerHTML.length ? this.scrollInit(0) : "";
 			this.homeInit();
 			if (typeof bom.onscroll == "function") {
@@ -164,11 +162,11 @@
 				this.gamesFn(parameters);
 			}
 		},
-		threadPath: function threadPath(parameters) {
+		threadPath: function(parameters) {
 			this.threadInit(parameters.tag);
 			this.jsonpFn(this.threadUrl(parameters.tag, parameters.id));
 		},
-		threadsPath: function threadsPath(parameters) {
+		threadsPath: function(parameters) {
 			var tag = parameters.tag,
 			    tag = decodeURIComponent(tag),
 			    parametersUser = typeof parameters.user != "undefined",
@@ -197,11 +195,11 @@
 				}
 			}
 		},
-		/**
-  	* function
-  	* 
-  */
-		locationFn: function locationFn(parameters) {
+	/**
+		* function
+		* 
+	*/
+		locationFn: function(parameters) {
 			var path = {},
 			    p = parameters.substr(1).split("/");
 
@@ -228,7 +226,7 @@
 			}
 			return path;
 		},
-		prettyDateFn: function prettyDateFn(date) {
+		prettyDateFn: function(date) {
 			var d = [];
 			d.push(date.substr(0, 4));
 			d.push(date.substr(4, 2));
@@ -238,13 +236,13 @@
 			d = new Date(d).toISOString().substr(0, 10).replace(/-/gi, "");
 			return d;
 		},
-		gamesFn: function gamesFn(parameters) {
+		gamesFn: function(parameters) {
 			var date = typeof parameters.date != "undefined" ? parameters.date : new Date(new Date().getTime() - 86400000).toISOString().substr(0, 10).replace(/-/gi, "");
 			this.jsonpFn(this.gameUrl(1, date));
 			this.jsonpFn(this.gameUrl(2, date));
 			this.jsonpFn(this.gameUrl(3, date));
 		},
-		pathFn: function pathFn(path, event) {
+		pathFn: function(path, event) {
 			typeof event != "undefined" ? event.preventDefault() : "";
 			typeof path != "string" ? path = path.href : "";
 			if (this.popstate) {
@@ -254,7 +252,7 @@
 				bom.location.href = path;
 			}
 		},
-		getThreadsFn: function getThreadsFn(tag, parameters) {
+		getThreadsFn: function(tag, parameters) {
 			var date = dom.getElementsByName("date"),
 			    el = dom.getElementsByName("threads")[0];
 			date = date.length ? date[date.length - 1].value * 1 : this.jsonpFn(this.threadsUrl(tag, parameters.date));
@@ -266,21 +264,21 @@
 				this.scrollInit(1);
 			}
 		},
-		notFoundFn: function notFoundFn(el, index) {
+		notFoundFn: function(el, index) {
 			var elm = dom.getElementById(el.name + "_" + index);
 			elm.parentNode.removeChild(elm);
 			if (el.name == "infobox_image") dom.getElementsByName(el.name)[0].checked = true;
 		},
-		clearFn: function clearFn() {
+		clearFn: function() {
 			this.jsonpElement.innerHTML = "";
 		},
-		jsonpFn: function jsonpFn(url) {
+		jsonpFn: function(url) {
 			var script = dom.createElement("script");
 			script.src = url;
 			script.onload = "forum.clearFn()";
 			this.jsonpElement.appendChild(script);
 		},
-		ajaxFn: function ajaxFn(url, method, data, type) {
+		ajaxFn: function(url, method, data, type) {
 			var xhr = bom.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
 			xhr.onreadystatechange = function (e) {
 				if (e.target.readyState == 4 && e.target.status == 200) {
@@ -298,7 +296,7 @@
 			xhr.open(method, url, true);
 			data ? xhr.send(data) : xhr.send();
 		},
-		oembedFn: function oembedFn(el) {
+		oembedFn: function(el) {
 			var url = typeof el.value != "undefined" ? el.value.match(this.regex.url) : el.textContent.match(this.regex.url);
 			if (url) {
 				for (var i = 0, len = url.length; i < len; i++) {
@@ -342,10 +340,10 @@
 				radio.dataset.request = "";
 			}
 		},
-		autocompleteFn: function autocompleteFn(keyword, len, area) {
+		autocompleteFn: function(keyword, len, area) {
 			len > 0 || area ? this.jsonpFn(this.autocompleteUrl(keyword)) : "";
 		},
-		searchFn: function searchFn() {
+		searchFn: function() {
 			var checked = dom.querySelector("input[name='keyword']:checked"),
 			    check = checked ? checked.value : 0,
 			    v = this.tagElement.textContent;
@@ -357,15 +355,12 @@
 				this.switchElement.checked = false;
 			}
 		},
-		keywordFocusFn: function keywordFocusFn(e) {
+		keywordFocusFn: function(e) {
 			var area = !(dom.getElementById("shortcut").textContent.length > 0),
 			    keywords = dom.getElementsByName("keyword"),
 			    keyword = this.tagElement.textContent,
 			    len = keywords.length;
 			switch (e.which) {
-				case 0:
-					this.searchFn();
-					break;
 				case 8:
 					this.autocompleteFn(keyword, len, area);
 					break;
@@ -401,10 +396,10 @@
 					break;
 			}
 		},
-		currentScrollFn: function currentScrollFn() {
+		currentScrollFn: function() {
 			return dom.body.scrollTop || dom.documentElement.scrollTop;
 		},
-		scrollFn: function scrollFn(v) {
+		scrollFn: function(v) {
 			var limit = dom.body.scrollHeight - dom.documentElement.clientHeight,
 			    current = this.currentScrollFn(),
 			    path,
@@ -431,7 +426,7 @@
 				this.loadingFn(1);
 			}
 		},
-		utilFn: function utilFn(keyword) {
+		utilFn: function(keyword) {
 			var checked = this.switchElement.checked;
 
 			if (keyword != undefined) {
@@ -446,10 +441,10 @@
 				this.postFn();
 			}
 		},
-		closeFn: function closeFn() {
+		closeFn: function() {
 			dom.querySelector("[name='switch']:checked").checked = false;
 		},
-		modifyFn: function modifyFn(id) {
+		modifyFn: function(id) {
 			var el = dom.getElementById("switch" + id),
 			    reply = dom.getElementById("reply" + id),
 			    content = dom.querySelector("[for=\"switch" + id + "\"]").textContent;
@@ -462,7 +457,7 @@
 				reply.focus();
 			}
 		},
-		replyFn: function replyFn(event, el, id) {
+		replyFn: function(event, el, id) {
 			if (event.which == 13) {
 				var content = el.textContent,
 				    path = typeof this.tagElement.textContent != "undefined" ? this.tagElement.textContent : "",
@@ -474,12 +469,12 @@
 				}, 0);
 			}
 		},
-		postFn: function postFn() {
+		postFn: function() {
 			var content = this.formElement.content.value;
 			var path = typeof this.tagElement.textContent != "undefined" ? this.tagElement.textContent : "";
 			this.postRest(content, path);
 		},
-		navFn: function navFn(type) {
+		navFn: function(type) {
 			if (type) {
 				type == "Google" ? this.jsonpFn("https://apis.google.com/js/platform.js") : "";
 				var provider = new firebase.auth[type + "AuthProvider"]();
@@ -497,7 +492,7 @@
 				bom.location.href = "/";
 			}
 		},
-		dateFormatFn: function dateFormatFn(time) {
+		dateFormatFn: function(time) {
 			var today = new Date().toISOString().substr(0, 10).replace(/-/gi, ""),
 			    diff = (new Date().getTime() - time) / 1000;
 			diff = diff - 33000;
@@ -506,18 +501,18 @@
 			if (isNaN(day_diff) || day_diff < 0) return;
 			return day_diff == 0 && (diff < 60 && "now" || diff < 120 && "1 minute" || diff < 3600 && Math.floor(diff / 60) + "minute" || diff < 7200 && "1 hour" || diff < 86400 && Math.floor(diff / 3600) + "hour") || day_diff == 1 && "1days" || day_diff < 7 && day_diff + "days" || day_diff < 31 && Math.floor(day_diff / 7) + "weeks" || today;
 		},
-		ridFn: function ridFn() {
+		ridFn: function() {
 			return Math.random().toString(36).substring(20);
 		},
-		loadingFn: function loadingFn(v, type) {
+		loadingFn: function(v, type) {
 			var dom_body = dom.body;
 			v ? dom_body.className += " loading" : dom_body.className = dom_body.className.replace(" loading", "");
 		},
-		/**
-  	* rest
-  	* 
-  */
-		postRest: function postRest(content, path, id) {
+	/**
+		* rest
+		* 
+	*/
+		postRest: function(content, path, id) {
 			if (!this.auth) {
 				alert(this.lang.validation.login);
 			} else if (!content.length) {
@@ -561,19 +556,19 @@
 				this.ajaxFn(path, type, data, "firebaseCallback");
 			}
 		},
-		deleteRest: function deleteRest(tag, id) {
+		deleteRest: function(tag, id) {
 			var bool = confirm(this.lang.validation.delete);
 			this.deleteCallback.id = id;
 			bool ? this.ajaxFn("\"" + this.restUrl + tag + "/" + id + ".json?auth=" + this.auth + "\"", "DELETE", "", "deleteCallback") : "";
 		},
-		/**
-  	* oembed
-  	* 
-  */
-		youtubeOembed: function youtubeOembed(id) {
+	/**
+		* oembed
+		* 
+	*/
+		youtubeOembed: function(id) {
 			dom.getElementById("media" + id).innerHTML += "<iframe src=\"https://www.youtube.com/embed/" + id + "?autoplay=1\" frameborder=\"0\"></iframe>";
 		},
-		defaultOembed: function defaultOembed(id, url) {
+		defaultOembed: function(id, url) {
 			var el = dom.getElementById("media" + id);
 			if (url.indexOf("gist.github.com") >= 0) {
 				this.gistCallback.id = id;
@@ -586,25 +581,25 @@
 				el.innerHTML += "<iframe src=\"" + url + "\"></iframe>";
 			}
 		},
-		/**
-  	* template
-  	* 
-  */
-		autocompleteTpl: function autocompleteTpl(keyword, json, num) {
+	/**
+		* template
+		* 
+	*/
+		autocompleteTpl: function(keyword, json, num) {
 			var v = json[1][num].replace(keyword, "<span>" + keyword + "</span>");
 			return "<input onkeydown=\"forum.keywordFocusFn(event)\" id=\"keyword" + num + "\" type=\"radio\" name=\"keyword\" value=\"" + json[1][num].replace(/%20/gi, "_") + "\"><label for=\"keyword" + num + "\"><a href=\"/" + json[1][num] + "\" onclick=\"forum.pathFn(this,event)\">" + v + "</a></label>";
 		},
-		youtubeTpl: function youtubeTpl(id) {
+		youtubeTpl: function(id) {
 			return "<a class=\"media\" id=\"media" + id + "\" onclick=\"window.forum.youtubeOembed('" + id + "')\"><img src=\"https://i.ytimg.com/vi/" + id + "/hqdefault.jpg\" alt=\"youtube\"></a>";
 		},
-		oembedTpl: function oembedTpl(url, img, key) {
+		oembedTpl: function(url, img, key) {
 			var id = this.ridFn();
 			return "<a class=\"media " + key + "\" id=\"media" + id + "\"><img src=\"" + img + "\" alt=\"\" onclick=\"window.forum.defaultOembed('" + id + "', '" + url + "')\"></a>";
 		},
-		newsTpl: function newsTpl(pageid, title) {
+		newsTpl: function(pageid, title) {
 			return "<li name=\"news\"><a href=\"https://" + this.lang.type + ".wikinews.org/wiki/" + title + "?dpl_id=" + pageid + "\" target=\"_blank\" title=new window\">" + title + "</a></li>";
 		},
-		gameTpl: function gameTpl(category, game, league, home, home_score, home_country, away, away_score, away_country, date, youtube, win, img) {
+		gameTpl: function(category, game, league, home, home_score, home_country, away, away_score, away_country, date, youtube, win, img) {
 			var type = 0,
 			    attr = typeof youtube != "undefined" ? "href=\"https://www.youtube.com/watch?v=" + youtube + "\" target=\"_blank\" title=\"new window\"" : "";
 			if (category == 1) {
@@ -617,10 +612,10 @@
 
 			return "<div name=\"game\" class=\"game " + win + " " + league + " " + type + "\" " + img + "><a " + attr + " class=\"title\"><dl class=\"home\"><dt><strong class=\"name\">" + home + "</strong><span class=\"country\">" + home_country + "</span></dt><dd class=\"score\">" + home_score + "</dd></dl><dl class=\"away\"><dt><strong class=\"name\">" + away + "</strong><span class=\"country\">" + away_country + "</span></dt><dd class=\"score\">" + away_score + "</dd></dl></a><input type=\"hidden\" name=\"date\" value=\"" + date + "\"></div>";
 		},
-		infobox_imageTpl: function infobox_imageTpl(key, value, num, checked) {
+		infobox_imageTpl: function(key, value, num, checked) {
 			return "<label id=\"infobox_image_" + num + "\" for=\"infobox_img" + num + "\"><input id=\"infobox_image" + num + "\" type=\"radio\" name=\"infobox_image\" " + checked + "><img name=\"infobox_image\" onerror=\"forum.notFoundFn(this, " + num + ")\" src=\"http://commons.wikimedia.org/wiki/Special:Filepath/" + value + "\" alt=\"" + key + "\"></label>";
 		},
-		threadTpl: function threadTpl(prop, data, img) {
+		threadTpl: function(prop, data, img) {
 			img = typeof img != "undefined" ? "<div class=\"image\">" + img + "</div>" : "";
 			var tag = this.tagElement.textContent,
 			    meta = "",
@@ -638,18 +633,18 @@
 			}
 			return meta + "<input id=\"switch" + prop + "\" name=\"switch\" type=\"radio\" data-mode=\"post\" data-request=\"\" data-url=\"\" data-img=\"\"> <form action=\"javascript:this.replyFn('" + prop + "')\" id=\"" + prop + "\" name=\"thread\"><input type=\"hidden\" name=\"lang\" value=\"" + data.lang + "\"><div class=\"info\"><div class=\"infobox\"><a href=\"/" + tag + "/" + data.email + "\" name=\"profile\" style=\"background-image:url(" + data.profile + ")\">" + data.name + "</a><a name=\"date\">" + this.dateFormatFn(data.date) + "</a>" + setting + "<a class=\"close\" onclick=\"window.forum.closeFn()\"><i class=\"alt\">close</i></a></div></div><label for=\"switch" + prop + "\" name=\"content\">" + data.content + "</label><div id=\"reply" + prop + "\" title=\"" + this.lang.title.reply + "\" class=\"reply\" contenteditable onkeyup=\"window.forum.oembedFn(this)\" onkeydown=\"forum.replyFn(event, this, '" + prop + "')\"></div>" + parent + root + img + "</form>";
 		},
-		threadsTpl: function threadsTpl(json, key, tag, img) {
+		threadsTpl: function(json, key, tag, img) {
 			var thread_key = typeof json[key].root != "undefined" ? json[key].root + "#" + key : key;
 			return "<form name=\"threads\" " + (typeof json[key].root == "undefined" ? "class='root'" : "") + " action=\"javascript:fetchRecord(this)\"><input name=\"root\" type=\"hidden\" value=\"" + json[key].root + "\"><input name=\"parent\" type=\"hidden\" value=\"" + json[key].parent + "\"><input name=\"date\" type=\"hidden\" value=\"" + json[key].date + "\">" + img + "<div id=\"content" + key + "\" class=\"content\"><div class=\"info\"><a class=\"profile\" href=\"/" + tag + "/" + json[key].email + "\" onclick=\"forum.pathFn(this, event)\"><img class=\"profile_img\" alt=\"" + json[key].name + "\" src=\"" + json[key].profile + "\"><span class=\"name\">" + json[key].name + "</span></a><span class=\"date\">" + this.dateFormatFn(json[key].date) + "</span></div><a class=\"txt\" href=\"/" + tag + "/" + thread_key + "\" onclick=\"forum.pathFn(this, event)\" contenteditable=\"false\">" + json[key].content + "</a></div></form>";
 		},
-		thread_mediaTpl: function thread_mediaTpl(json, key, num) {
+		thread_mediaTpl: function(json, key, num) {
 			return "<a class=\"thumnail\" id=\"media" + key + "\"><img src=\"" + json[key].img[num] + "\" alt=\"thumnail\"></a>";
 		},
-		/**
-  	* callback
-  	* 
-  */
-		gameCallback: function gameCallback(json) {
+	/**
+		* callback
+		* 
+	*/
+		gameCallback: function(json) {
 			var body = "",
 			    entry = json.feed.entry,
 			    category = json.feed.title.$t;
@@ -685,7 +680,7 @@
 				this.loadingFn(0);
 			}
 		},
-		newsCallback: function newsCallback(json) {
+		newsCallback: function(json) {
 			var body = "";
 			if (json.query.recentchanges.length) {
 				var list = json.query.recentchanges;
@@ -699,7 +694,7 @@
 				this.newsElement.innerHTML = "<ul class=\"news\">" + body + "</ul>";
 			}
 		},
-		infoboxCallback: function infoboxCallback(json) {
+		infoboxCallback: function(json) {
 			var dl = "",
 			    keywords = "",
 			    uri = "",
@@ -736,7 +731,7 @@
 			dl.length > 0 ? this.infoboxElement.innerHTML = "<label for=\"more_images\"><span>more</span></label><h2>" + infobox_image + images + "</h2><dl>" + dl + "</dl>" : this.infoboxElement.innerHTML = "";
 			uri.length > 0 ? dom.getElementById("domain_uri").href = uri : "";
 		},
-		autocompleteCallback: function autocompleteCallback(json) {
+		autocompleteCallback: function(json) {
 			var body = "";
 			var keyword = this.tagElement.textContent;
 			if (json.length) {
@@ -748,7 +743,7 @@
 				this.shortcutElement.innerHTML = "";
 			}
 		},
-		firebaseCallback: function firebaseCallback(json) {
+		firebaseCallback: function(json) {
 			if (typeof json != "undefined") {
 				var tpl = "",
 				    img = "",
@@ -775,7 +770,7 @@
 				delete this.firebaseCallback.data;
 			}
 		},
-		deleteCallback: function deleteCallback(json) {
+		deleteCallback: function(json) {
 			if (json === null) {
 				var keyword = this.tagElement.textContent,
 				    id = this.deleteCallback.id,
@@ -798,7 +793,7 @@
 				delete this.deleteCallback.id;
 			}
 		},
-		threadsCallback: function threadsCallback(json) {
+		threadsCallback: function(json) {
 			if (json) {
 				var body = "",
 				    parameters = bom.location.pathname,
@@ -832,7 +827,7 @@
 				!dom.getElementById("thread_none") ? this.threadsElement.innerHTML += "<div id=\"thread_none\">" + this.lang.status.none + "</div>" : "";
 			}
 		},
-		threadCallback: function threadCallback(json) {
+		threadCallback: function(json) {
 			var date,
 			    parameters = bom.location.pathname,
 			    parameters = this.locationFn(parameters),
@@ -869,7 +864,7 @@
 				}
 			}
 		},
-		oembedCallback: function oembedCallback(json) {
+		oembedCallback: function(json) {
 			this.jsonpElement.innerHTML += json.html;
 			var radio = dom.querySelector("[name='switch']:checked"),
 			    iframe = this.jsonpElement.getElementsByTagName("iframe");
@@ -877,27 +872,26 @@
 			radio.dataset.img += json.thumbnail_url + ",";
 			iframe[0].remove();
 		},
-		gistCallback: function gistCallback(json) {
+		gistCallback: function(json) {
 			var self = this.gistCallback,
 			    el = dom.getElementById("media" + self.id);
 			el.innerHTML += "<link rel=\"stylesheet\" href=\"" + json.stylesheet + "\">" + json.div;
 			delete self["id"];
 		},
-		/**
-  	* Error
-  	* 
-  */
-		threadError: function threadError() {},
-		threadsError: function threadsError() {},
-		homeError: function homeError() {},
-		mediaError: function mediaError() {}
+	/**
+		* Error
+		* 
+	*/
+		threadError: function() {},
+		threadsError: function() {},
+		homeError: function() {},
+		mediaError: function() {}
 	};
-
 	var n = navigator,
 	    uAgent = n.userAgent.toLowerCase(),
 	    type = n.appName,
 	    lang = type == "Netscape" ? navigator.language : lang = navigator.userLanguage;
-	dom.documentElement.lang = lang = lang.substr(0, 2);
 
+	dom.documentElement.lang = lang = lang.substr(0, 2);
 	forum.jsonpFn("/lang/" + lang + ".js");
 })(window, document);

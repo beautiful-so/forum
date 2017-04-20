@@ -13,7 +13,7 @@
 			<form name="form" action="javascript:forum.utilFn()">
 				<fieldset>
 					<div id="util">
-						<input type="radio" onkeydown="window.forum.keywordFocusFn(event)" name="keyword">
+						<input type="radio" onkeydown="window.forum.keywordFocusFn(event)" name="keyword" value="">
 						<label id="tag" onkeyup="window.forum.keywordFocusFn(event)" onclick="" contenteditable></label>
 						<label for="switch"></label>
 						<strong><i class="placeholder"></i></strong>
@@ -36,7 +36,6 @@
 			<input type="checkbox" id="more_images">
 			<div id="keywords"></div>
 			<div id="infobox"></div>
-			<div id="filter"></div>
 		</aside>
 		<main id="main">
 			<section id="news"></section>
@@ -46,7 +45,8 @@
 		</main>
 		<footer></footer>
 		<div id="jsonp"></div>
-		<script>
+		<script src="/es6.js"></script>
+		<!--<script>
 			(function(dom) {
 				var script = dom.createElement("script"),
 					cache = typeof localStorage.code != "undefined",
@@ -54,10 +54,10 @@
 				if(support){
 					cache ? script.text = localStorage.code : script.src = "/es6.js";
 				}else{
-					script.src = "/es5.js";
+					script.src = "/es6.js";
 				}
 				dom.body.appendChild(script);
 			})(document);
-		</script>
+		</script>-->
 	</body>
 </html>

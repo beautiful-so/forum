@@ -195,6 +195,25 @@
 		* function
 		* 
 	*/
+		placeCaretAtEnd : function(el) {
+    		if(this.placeCaretAtEnd.checked){
+				el.focus();
+				if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
+					var range = document.createRange();
+					range.selectNodeContents(el);
+					range.collapse(false);
+					var sel = window.getSelection();
+					sel.removeAllRanges();
+					sel.addRange(range);
+				} else if (typeof document.body.createTextRange != "undefined") {
+					var textRange = document.body.createTextRange();
+					textRange.moveToElementText(el);
+					textRange.collapse(false);
+					textRange.select();
+				}
+				delete this.placeCaretAtEnd.checked
+			}			
+		},
 		locationFn : function(parameters) {
             var path = {},
                 p = parameters.substr(1).split("/");
@@ -340,6 +359,10 @@
 		autocompleteFn : function(keyword, len, area) {
 			len > 0 || area ? this.jsonpFn(this.autocompleteUrl(keyword)) : "";
 		},
+		autocompleteFocusFn : function(keyword){
+			this.tagElement.textContent = keyword;
+			this.placeCaretAtEnd.checked = true;
+		},
 		searchFn : function() {
 			var checked = dom.querySelector("input[name='keyword']:checked"),
 				check = checked ? checked.value : 0,
@@ -359,11 +382,16 @@
 				keyword = this.tagElement.textContent,
 				len = keywords.length;
 			switch(e.which){
-				case 0 :
-					this.searchFn();
-					break;
+				// case 0 :
+				// 	this.searchFn();
+				// 	break;
 				case 8 :
-					this.autocompleteFn(keyword, len, area);
+					if(keyword.length > 0){
+						this.autocompleteFn(keyword, len, area);
+						this.placeCaretAtEnd(this.tagElement);
+					}else{
+						this.shortcutElement.innerHTML = "";
+					}
 					break;
 				case 9 :
 					this.tagElement.removeAttribute("contenteditable");
@@ -394,6 +422,7 @@
 					break;
 				default :
 					this.autocompleteFn(keyword, len, area);
+					this.placeCaretAtEnd(this.tagElement);
 					break;
 			}
 		},
@@ -594,7 +623,7 @@
 	*/
 		autocompleteTpl : function(keyword, json, num) {
 			var v = json[1][num].replace(keyword, `<span>${keyword}</span>`);
-			return `<input onkeydown="forum.keywordFocusFn(event)" id="keyword${num}" type="radio" name="keyword" value="${json[1][num].replace(/%20/gi, "_")}"><label for="keyword${num}"><a href="/${json[1][num]}" onclick="forum.pathFn(this,event)">${v}</a></label>`;
+			return `<input onfocus="forum.autocompleteFocusFn(this.value)" onkeydown="forum.keywordFocusFn(event)" id="keyword${num}" type="radio" name="keyword" value="${json[1][num].replace(/%20/gi, "_")}"><label for="keyword${num}"><a href="/${json[1][num]}" onclick="forum.pathFn(this,event)">${v}</a></label>`;
 		},
 		youtubeTpl : function(id) {
 			return `<a class="media" id="media${id}" onclick="window.forum.youtubeOembed('${id}')"><img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="youtube"></a>`;

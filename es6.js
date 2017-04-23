@@ -1,3 +1,4 @@
+"use strict;";
 /**
 	* Copyright (c) 2016 forum.red Corp.
 	* forum.red projects are licensed under the MIT license
@@ -332,11 +333,11 @@
 							radio.dataset.url += `https://www.youtube.com/embed/${id},`;
 							radio.dataset.img += `https://i.ytimg.com/vi/${id}/hqdefault.jpg,`;
 						}else if(a.hostname == "vimeo.com"){
-							this.ajaxFn(`https://vimeo.com/api/oembed.json?url=https://${url}"`, "GET", "", this.oembedCallback);
+							this.ajaxFn(`https://vimeo.com/api/oembed.json?url=https://${url}`, "GET", "", this.oembedCallback);
 						}else if(a.hostname == "soundcloud.com"){
 							this.ajaxFn(`https://soundcloud.com/oembed?url=${uri}&format=json`, "GET", "", this.oembedCallback);
 						}else if(a.hostname == "www.slideshare.net"){
-							this.jsonpFn("https://www.slideshare.net/api/oembed/2?url=" + url + "&format=json&callback=this.oembedCallback");
+							this.jsonpFn("https://www.slideshare.net/api/oembed/2?url=" + url + "&format=json&callback=forum.oembedCallback");
 						}else if(a.hostname == "gist.github.com"){
 							radio.dataset.url += url+",";
 							radio.dataset.img += "https://gist.github.com/fluidicon.png,";
@@ -537,9 +538,6 @@
 				day_diff < 31 && Math.floor( day_diff / 7 ) + "weeks" ||
 				today
 		},
-		ridFn : function() {
-			return Math.random().toString(36).substring(20);
-		},
 		loadingFn : function(v, type) {
 			var dom_body = dom.body;
 			v ? dom_body.className += " loading" : dom_body.className = dom_body.className.replace(" loading", "");
@@ -629,7 +627,7 @@
 			return `<a class="media" id="media${id}" onclick="window.forum.youtubeOembed('${id}')"><img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="youtube"></a>`;
 		},
 		oembedTpl : function(url, img, key) {
-			var id = this.ridFn();
+			var id = Math.random().toString(36).substring(3);
 			return `<a class="media ${key}" id="media${id}"><img src="${img}" alt="" onclick="window.forum.defaultOembed('${id}', '${url}')"></a>`;
 		},
 		newsTpl : function(pageid, title) {
@@ -903,9 +901,9 @@
 			}
 		},
 		oembedCallback : function(json) {
-			this.jsonpElement.innerHTML += json.html;
+			forum.jsonpElement.innerHTML += json.html;
 			var radio = dom.querySelector("[name='switch']:checked"),
-				iframe = this.jsonpElement.getElementsByTagName("iframe");
+				iframe = forum.jsonpElement.getElementsByTagName("iframe");
 			radio.dataset.url += iframe[0].src+",";
 			radio.dataset.img += json.thumbnail_url+",";
 			iframe[0].remove();	

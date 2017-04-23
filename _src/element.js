@@ -1,0 +1,17 @@
+module.exports = {
+    jsonpElement : document.getElementById("jsonp"),
+    shortcutElement : document.getElementById("shortcut"),
+    switchElement : document.getElementById("switch"),
+    formElement : document.form,
+    navElement : document.getElementById("nav"),
+    tagElement : document.getElementById("tag"),
+    newsElement : document.getElementById("news"),
+    gamesElement : document.getElementById("games"),
+    threadsElement : document.getElementById("threads"),
+    threadElement : document.getElementById("thread"),
+    imagesElement : document.getElementById("images"),
+    mainElement : document.getElementById("main"),
+    asideElement : document.getElementById("aside"),
+    keywordsElement : document.getElementById("keywords"),
+    infoboxElement : document.getElementById("infobox"),
+};

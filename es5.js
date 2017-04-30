@@ -1,9 +1,10 @@
 "use strict";
-
+"use strict;";
 /**
 	* Copyright (c) 2016 forum.red Corp.
 	* forum.red projects are licensed under the MIT license
 */
+
 (function (bom, dom) {
 	"use strict;";
 
@@ -337,11 +338,11 @@
 							radio.dataset.url += "https://www.youtube.com/embed/" + id + ",";
 							radio.dataset.img += "https://i.ytimg.com/vi/" + id + "/hqdefault.jpg,";
 						} else if (a.hostname == "vimeo.com") {
-							this.ajaxFn("https://vimeo.com/api/oembed.json?url=https://" + url + "\"", "GET", "", this.oembedCallback);
+							this.ajaxFn("https://vimeo.com/api/oembed.json?url=https://" + url, "GET", "", this.oembedCallback);
 						} else if (a.hostname == "soundcloud.com") {
 							this.ajaxFn("https://soundcloud.com/oembed?url=" + uri + "&format=json", "GET", "", this.oembedCallback);
 						} else if (a.hostname == "www.slideshare.net") {
-							this.jsonpFn("https://www.slideshare.net/api/oembed/2?url=" + url + "&format=json&callback=this.oembedCallback");
+							this.jsonpFn("https://www.slideshare.net/api/oembed/2?url=" + url + "&format=json&callback=forum.oembedCallback");
 						} else if (a.hostname == "gist.github.com") {
 							radio.dataset.url += url + ",";
 							radio.dataset.img += "https://gist.github.com/fluidicon.png,";
@@ -535,9 +536,6 @@
 			if (isNaN(day_diff) || day_diff < 0) return;
 			return day_diff == 0 && (diff < 60 && "now" || diff < 120 && "1 minute" || diff < 3600 && Math.floor(diff / 60) + "minute" || diff < 7200 && "1 hour" || diff < 86400 && Math.floor(diff / 3600) + "hour") || day_diff == 1 && "1days" || day_diff < 7 && day_diff + "days" || day_diff < 31 && Math.floor(day_diff / 7) + "weeks" || today;
 		},
-		ridFn: function ridFn() {
-			return Math.random().toString(36).substring(20);
-		},
 		loadingFn: function loadingFn(v, type) {
 			var dom_body = dom.body;
 			v ? dom_body.className += " loading" : dom_body.className = dom_body.className.replace(" loading", "");
@@ -627,15 +625,14 @@
 			return "<a class=\"media\" id=\"media" + id + "\" onclick=\"window.forum.youtubeOembed('" + id + "')\"><img src=\"https://i.ytimg.com/vi/" + id + "/hqdefault.jpg\" alt=\"youtube\"></a>";
 		},
 		oembedTpl: function oembedTpl(url, img, key) {
-			var id = this.ridFn();
+			var id = Math.random().toString(36).substring(3);
 			return "<a class=\"media " + key + "\" id=\"media" + id + "\"><img src=\"" + img + "\" alt=\"\" onclick=\"window.forum.defaultOembed('" + id + "', '" + url + "')\"></a>";
 		},
 		newsTpl: function newsTpl(pageid, title) {
 			return "<li name=\"news\"><a href=\"https://" + this.lang.type + ".wikinews.org/wiki/" + title + "?dpl_id=" + pageid + "\" target=\"_blank\" title=new window\">" + title + "</a></li>";
 		},
 		gameTpl: function gameTpl(category, game, league, home, home_score, home_country, away, away_score, away_country, date, youtube, win, img) {
-			var type = 0,
-			    attr = typeof youtube != "undefined" ? "href=\"https://www.youtube.com/watch?v=" + youtube + "\" target=\"_blank\" title=\"new window\"" : "";
+			var type = 0;
 			if (category == 1) {
 				type = "football";
 			} else if (category == 2) {
@@ -644,7 +641,7 @@
 				type = "baseball";
 			}
 
-			return "<div name=\"game\" class=\"game " + win + " " + league + " " + type + "\" " + img + "><a " + attr + " class=\"title\"><dl class=\"home\"><dt><strong class=\"name\">" + home + "</strong><span class=\"country\">" + home_country + "</span></dt><dd class=\"score\">" + home_score + "</dd></dl><dl class=\"away\"><dt><strong class=\"name\">" + away + "</strong><span class=\"country\">" + away_country + "</span></dt><dd class=\"score\">" + away_score + "</dd></dl></a><input type=\"hidden\" name=\"date\" value=\"" + date + "\"></div>";
+			return "<div name=\"game\" class=\"game " + win + " " + league + " " + type + "\" " + img + "><a href=\"https://www.youtube.com/results?search_query=" + home + " " + away + " " + home_score + " " + away_score + " " + date + "\" target=\"_blank\" title=\"new window\" class=\"title\"><dl class=\"home\"><dt><strong class=\"name\">" + home + "</strong><span class=\"country\">" + home_country + "</span></dt><dd class=\"score\">" + home_score + "</dd></dl><dl class=\"away\"><dt><strong class=\"name\">" + away + "</strong><span class=\"country\">" + away_country + "</span></dt><dd class=\"score\">" + away_score + "</dd></dl></a><input type=\"hidden\" name=\"date\" value=\"" + date + "\"></div>";
 		},
 		infobox_imageTpl: function infobox_imageTpl(key, value, num, checked) {
 			return "<label id=\"infobox_image_" + num + "\" for=\"infobox_img" + num + "\"><input id=\"infobox_image" + num + "\" type=\"radio\" name=\"infobox_image\" " + checked + "><img name=\"infobox_image\" onerror=\"forum.notFoundFn(this, " + num + ")\" src=\"http://commons.wikimedia.org/wiki/Special:Filepath/" + value + "\" alt=\"" + key + "\"></label>";
@@ -899,9 +896,9 @@
 			}
 		},
 		oembedCallback: function oembedCallback(json) {
-			this.jsonpElement.innerHTML += json.html;
+			forum.jsonpElement.innerHTML += json.html;
 			var radio = dom.querySelector("[name='switch']:checked"),
-			    iframe = this.jsonpElement.getElementsByTagName("iframe");
+			    iframe = forum.jsonpElement.getElementsByTagName("iframe");
 			radio.dataset.url += iframe[0].src + ",";
 			radio.dataset.img += json.thumbnail_url + ",";
 			iframe[0].remove();

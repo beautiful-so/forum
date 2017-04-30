@@ -45,19 +45,18 @@
 		</main>
 		<footer></footer>
 		<div id="jsonp"></div>
-		<script src="/es6.js"></script>
-		<!--<script>
+		<script>
 			(function(dom) {
 				var script = dom.createElement("script"),
 					cache = typeof localStorage.code != "undefined",
 					support = typeof String.raw != "undefined";
 				if(support){
-					cache ? script.text = localStorage.code : script.src = "/es6.js";
-				}else{
 					script.src = "/es6.js";
+				}else{
+					script.src = "/es5.js";
 				}
 				dom.body.appendChild(script);
 			})(document);
-		</script>-->
+		</script>
 	</body>
 </html>

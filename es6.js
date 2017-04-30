@@ -634,8 +634,7 @@
 			return `<li name="news"><a href="https://${this.lang.type}.wikinews.org/wiki/${title}?dpl_id=${pageid}" target="_blank" title=new window">${title}</a></li>`;
 		},
 		gameTpl : function(category, game, league, home, home_score, home_country, away, away_score, away_country, date, youtube, win, img) {
-			var type = 0,
-				attr = typeof youtube != "undefined" ? `href="https://www.youtube.com/watch?v=${youtube}" target="_blank" title="new window"` : "";
+			var type = 0;
 			if(category == 1){
 				type = "football";
 			}else if(category == 2){
@@ -644,7 +643,7 @@
 				type = "baseball";
 			}
 
-			return `<div name="game" class="game ${win} ${league} ${type}" ${img}><a ${attr} class="title"><dl class="home"><dt><strong class="name">${home}</strong><span class="country">${home_country}</span></dt><dd class="score">${home_score}</dd></dl><dl class="away"><dt><strong class="name">${away}</strong><span class="country">${away_country}</span></dt><dd class="score">${away_score}</dd></dl></a><input type="hidden" name="date" value="${date}"></div>`;
+			return `<div name="game" class="game ${win} ${league} ${type}" ${img}><a href="https://www.youtube.com/results?search_query=${home} ${away} ${home_score} ${away_score} ${date}" target="_blank" title="new window" class="title"><dl class="home"><dt><strong class="name">${home}</strong><span class="country">${home_country}</span></dt><dd class="score">${home_score}</dd></dl><dl class="away"><dt><strong class="name">${away}</strong><span class="country">${away_country}</span></dt><dd class="score">${away_score}</dd></dl></a><input type="hidden" name="date" value="${date}"></div>`;
         },
 		infobox_imageTpl : function(key, value, num, checked) {
 			return `<label id="infobox_image_${num}" for="infobox_img${num}"><input id="infobox_image${num}" type="radio" name="infobox_image" ${checked}><img name="infobox_image" onerror="forum.notFoundFn(this, ${num})" src="http://commons.wikimedia.org/wiki/Special:Filepath/${value}" alt="${key}"></label>`;

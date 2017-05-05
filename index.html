@@ -10,15 +10,15 @@
 	<body>
 		<header id="header">
 			<input type="radio" name="switch" id="switch" data-mode="post" data-request="" data-url="" data-img="">
-			<form name="form" action="javascript:forum.utilFn()">
+			<form name="form" action="javascript:app.utilFn()">
 				<fieldset>
 					<div id="util">
-						<input type="radio" onkeydown="window.forum.keywordFocusFn(event)" name="keyword" value="">
-						<label id="tag" onkeyup="window.forum.keywordFocusFn(event)" onclick="" contenteditable></label>
+						<input type="radio" onkeydown="window.app.keywordFocusFn(event)" name="keyword" value="">
+						<label id="tag" onkeyup="window.app.keywordFocusFn(event)" onclick="" contenteditable></label>
 						<label for="switch"></label>
 						<strong><i class="placeholder"></i></strong>
-						<input name="content" type="text" maxlength="150" onkeyup="window.forum.oembedFn(this)" placeholder="" shortcut="off" list="keep" required><datalist id="keep"></datalist>
-						<select name="nav" id="nav" onchange="window.forum.navFn(this.value)">
+						<input name="content" type="text" maxlength="150" onkeyup="window.app.oembedFn(this)" placeholder="" shortcut="off" list="keep" required><datalist id="keep"></datalist>
+						<select name="nav" id="nav" onchange="window.app.navFn(this.value)">
 							<option value="default">&mldr;</option>
 							<option class="signin" value="Google">Google</option>
 							<option class="signin" value="Facebook">Facebook</option>
@@ -28,7 +28,7 @@
 						</select>
 					</div>
 					<div id="shortcut" onfocusout=""></div>
-					<div onclick="window.forum.autocompleteCallback(0)" class="dim"></div>
+					<div onclick="window.app.autocompleteCallback(0)" class="dim"></div>
 				</fieldset>
 			</form>
 		</header>

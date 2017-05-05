@@ -5,7 +5,7 @@
 */
 (function(bom, dom) {
 	"use strict;"
-	bom.forum = {
+	bom.app = {
 	/**
 		* option
 		* 
@@ -18,19 +18,19 @@
 		},
 		restUrl : "https://fora.firebaseio.com/tag/",
 		autocompleteUrl : function(keyword) {
-			return `http://${this.lang.type}.wikipedia.org/w/api.php?action=opensearch&limit=10&format=json&utf8=1&callback=forum.autocompleteCallback&search=${keyword}`;
+			return `http://${this.lang.type}.wikipedia.org/w/api.php?action=opensearch&limit=10&format=json&utf8=1&callback=app.autocompleteCallback&search=${keyword}`;
 		},
 		gameUrl : function(type, date) {
-			return `https://spreadsheets.google.com/feeds/list/1-JVlP9YIwC2DydGZvAtOSmRE-BhN32IRK8g6AfchcQU/${type}/public/basic?alt=json-in-script&sq=date=${date}&callback=forum.gameCallback`;
+			return `https://spreadsheets.google.com/feeds/list/1-JVlP9YIwC2DydGZvAtOSmRE-BhN32IRK8g6AfchcQU/${type}/public/basic?alt=json-in-script&sq=date=${date}&callback=app.gameCallback`;
 		},
 		newsUrl : function() {
-			return `https://${this.lang.type}.wikinews.org/w/api.php?action=query&format=json&list=recentchanges&redirects=1&utf8=1&rcdir=newer&rcnamespace=0&rclimit=100&callback=forum.newsCallback`;
+			return `https://${this.lang.type}.wikinews.org/w/api.php?action=query&format=json&list=recentchanges&redirects=1&utf8=1&rcdir=newer&rcnamespace=0&rclimit=100&callback=app.newsCallback`;
 		},
 		infoboxUrl : function(tag) {
-			return `http://${this.lang.type}.dbpedia.org/sparql?default-graph-uri=http://${this.lang.type}.dbpedia.org&query=select distinct * where { <http://${this.lang.type}.dbpedia.org/resource/${tag.replace(/%20/gi, "_")}> ?k ?o . }&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on&callback=forum.infoboxCallback`;
+			return `http://${this.lang.type}.dbpedia.org/sparql?default-graph-uri=http://${this.lang.type}.dbpedia.org&query=select distinct * where { <http://${this.lang.type}.dbpedia.org/resource/${tag.replace(/%20/gi, "_")}> ?k ?o . }&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on&callback=app.infoboxCallback`;
 		},
 		threadUrl : function(tag, id) {
-			return `${this.restUrl}${tag}/${id}.json?callback=forum.threadCallback`;
+			return `${this.restUrl}${tag}/${id}.json?callback=app.threadCallback`;
 		},
 		threadsUrl : function(tag, date, user, back) {
 			var parameter = "";
@@ -41,13 +41,13 @@
 			}else{
 				parameter = `${(date ? "endAt=" + date + "&" : "")}orderBy="date"&limitToLast=10`;
 			}
-			return `${this.restUrl}${tag}.json?${parameter}&callback=forum.threadsCallback`;
+			return `${this.restUrl}${tag}.json?${parameter}&callback=app.threadsCallback`;
 		},
 		rootUrl : function(tag, root) {
-			return `${this.restUrl}${tag}/${root}.json/?callback=forum.threadCallback`;
+			return `${this.restUrl}${tag}/${root}.json/?callback=app.threadCallback`;
 		},
 		branchUrl : function(tag, root, date) {
-			return `${this.restUrl}${tag}.json?equalTo="${root}"&orderBy="root"&callback=forum.threadCallback`;
+			return `${this.restUrl}${tag}.json?equalTo="${root}"&orderBy="root"&callback=app.threadCallback`;
 		},
 	/**
 		* element
@@ -88,7 +88,7 @@
 						bom.localStorage.name = user.displayName;
 						bom.localStorage.email = user.email;
 						bom.localStorage.profile = user.photoURL;
-						forum.auth = user.Xc;
+						app.auth = user.Xc;
 						el = dom.querySelectorAll(".signin");
 						for(var i = 0, len = el.length; i < len; i++){
 							el[i].remove();
@@ -101,7 +101,7 @@
 			this.jsonpElement.appendChild(script);
 		},
 		scrollInit : function(bool) {
-			bool ? bom.onscroll = function() {bom.forum.scrollFn()} : bom.onscroll = null;
+			bool ? bom.onscroll = function() {bom.app.scrollFn()} : bom.onscroll = null;
 		},
 		routeInit : function() {
 			var parameters = bom.location.pathname,
@@ -253,10 +253,18 @@
 			return d;
 		},
 		gamesFn : function(parameters) {
-			var date = typeof parameters.date != "undefined" ? parameters.date : new Date(new Date().getTime() - 86400000).toISOString().substr(0,10).replace(/-/gi,"");
-			this.jsonpFn(this.gameUrl(1, date));
-			this.jsonpFn(this.gameUrl(2, date));
-			this.jsonpFn(this.gameUrl(3, date));
+			var date = typeof parameters.date != "undefined" ? parameters.date.toString() : new Date(new Date().getTime() - 86400000).toISOString().substr(0,10).replace(/-/gi,"").toString();
+
+			this.gameCallback.len = 2;
+
+			for(var i = 1; i < 4; i++){
+				if(typeof localStorage[i+date] != "undefined"){
+					var $json = eval("("+localStorage[i+date]+")");
+					this.gameCallback($json);
+				}else{
+					this.jsonpFn(this.gameUrl(i, date));
+				}
+			}
 		},
 		pathFn : function(path, event) {
 			typeof event != "undefined" ? event.preventDefault() : "";
@@ -265,6 +273,7 @@
 				history.pushState("", "PushState - 1", path);
 				this.routeInit();
 			}else{
+				// 스크롤 이벤트 일때 별도로 무한 스크롤 로딩 구현해야함
 				bom.location.href = path;
 			}
 		},
@@ -292,7 +301,7 @@
 		jsonpFn : function(url) {
 			var script = dom.createElement("script");
 			script.src = url;
-			script.onload = "forum.clearFn()";
+			script.onload = "app.clearFn()";
 			this.jsonpElement.appendChild(script);
 		},
 		ajaxFn : function(url, method, data, type) {
@@ -303,7 +312,7 @@
 					if(typeof type == "function"){
 						type(json);
 					}else{
-						forum[type](json);
+						app[type](json);
 					}
 					return;
 				}else{
@@ -337,7 +346,7 @@
 						}else if(a.hostname == "soundcloud.com"){
 							this.ajaxFn(`https://soundcloud.com/oembed?url=${uri}&format=json`, "GET", "", this.oembedCallback);
 						}else if(a.hostname == "www.slideshare.net"){
-							this.jsonpFn("https://www.slideshare.net/api/oembed/2?url=" + url + "&format=json&callback=forum.oembedCallback");
+							this.jsonpFn("https://www.slideshare.net/api/oembed/2?url=" + url + "&format=json&callback=app.oembedCallback");
 						}else if(a.hostname == "gist.github.com"){
 							radio.dataset.url += url+",";
 							radio.dataset.img += "https://gist.github.com/fluidicon.png,";
@@ -358,7 +367,15 @@
 			}
 		},
 		autocompleteFn : function(keyword, len, area) {
-			len > 0 || area ? this.jsonpFn(this.autocompleteUrl(keyword)) : "";
+			if(len > 0 || area){
+				var tag = localStorage["#"+keyword];
+				var $json = eval("("+tag+")");
+				if(typeof $json != "undefined"){
+					this.autocompleteCallback($json);
+				}else{
+					this.jsonpFn(this.autocompleteUrl(keyword))
+				}
+			}
 		},
 		autocompleteFocusFn : function(keyword){
 			this.tagElement.textContent = keyword;
@@ -383,9 +400,6 @@
 				keyword = this.tagElement.textContent,
 				len = keywords.length;
 			switch(e.which){
-				// case 0 :
-				// 	this.searchFn();
-				// 	break;
 				case 8 :
 					if(keyword.length > 0){
 						this.autocompleteFn(keyword, len, area);
@@ -443,8 +457,8 @@
 					path = this.prettyDateFn(date[0].value);
 				}
 				date ? this.pathFn(path) : "";
-				this.scrollInit(0);
-				this.loadingFn(1);
+				// this.scrollInit(0);
+				// this.loadingFn(1);
 			}else if(current >= limit){
 				if(parameters.tag){
 					path = `/${parameters.tag}/${(date[date.length - 1].value - 1)}`;
@@ -452,8 +466,8 @@
 					path = this.prettyDateFn(date[date.length - 1].value);
 				}
 				date ? this.pathFn(path) : "";
-				this.scrollInit(0);
-				this.loadingFn(1);
+				// this.scrollInit(0);
+				// this.loadingFn(1);
 			}
 		},
 		utilFn : function(keyword) {
@@ -461,11 +475,11 @@
 
 			if(keyword != undefined){
 				keyword = keyword.replace(/ /gi, "_");
-				this.pathFn("/" + keyword);
+				this.pathFn("/"+keyword+"/");
 				return;
 			}else if(!checked){
 				keyword = keyword.replace(/ /gi, "_");
-				this.pathFn("/" + keyword);
+				this.pathFn("/"+keyword+"/");
 				return;
 			}else if(checked){
 				this.postFn();
@@ -621,14 +635,14 @@
 	*/
 		autocompleteTpl : function(keyword, json, num) {
 			var v = json[1][num].replace(keyword, `<span>${keyword}</span>`);
-			return `<input onfocus="forum.autocompleteFocusFn(this.value)" onkeydown="forum.keywordFocusFn(event)" id="keyword${num}" type="radio" name="keyword" value="${json[1][num].replace(/%20/gi, "_")}"><label for="keyword${num}"><a href="/${json[1][num]}" onclick="forum.pathFn(this,event)">${v}</a></label>`;
+			return `<input onfocus="app.autocompleteFocusFn(this.value)" onkeydown="app.keywordFocusFn(event)" id="keyword${num}" type="radio" name="keyword" value="${json[1][num].replace(/%20/gi, "_")}"><label for="keyword${num}"><a href="/${json[1][num]}" onclick="app.pathFn(this,event)">${v}</a></label>`;
 		},
 		youtubeTpl : function(id) {
-			return `<a class="media" id="media${id}" onclick="window.forum.youtubeOembed('${id}')"><img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="youtube"></a>`;
+			return `<a class="media" id="media${id}" onclick="window.app.youtubeOembed('${id}')"><img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="youtube"></a>`;
 		},
 		oembedTpl : function(url, img, key) {
 			var id = Math.random().toString(36).substring(3);
-			return `<a class="media ${key}" id="media${id}"><img src="${img}" alt="" onclick="window.forum.defaultOembed('${id}', '${url}')"></a>`;
+			return `<a class="media ${key}" id="media${id}"><img src="${img}" alt="" onclick="window.app.defaultOembed('${id}', '${url}')"></a>`;
 		},
 		newsTpl : function(pageid, title) {
 			return `<li name="news"><a href="https://${this.lang.type}.wikinews.org/wiki/${title}?dpl_id=${pageid}" target="_blank" title=new window">${title}</a></li>`;
@@ -646,7 +660,7 @@
 			return `<div name="game" class="game ${win} ${league} ${type}" ${img}><a href="https://www.youtube.com/results?search_query=${home} ${away} ${home_score} ${away_score} ${date}" target="_blank" title="new window" class="title"><dl class="home"><dt><strong class="name">${home}</strong><span class="country">${home_country}</span></dt><dd class="score">${home_score}</dd></dl><dl class="away"><dt><strong class="name">${away}</strong><span class="country">${away_country}</span></dt><dd class="score">${away_score}</dd></dl></a><input type="hidden" name="date" value="${date}"></div>`;
         },
 		infobox_imageTpl : function(key, value, num, checked) {
-			return `<label id="infobox_image_${num}" for="infobox_img${num}"><input id="infobox_image${num}" type="radio" name="infobox_image" ${checked}><img name="infobox_image" onerror="forum.notFoundFn(this, ${num})" src="http://commons.wikimedia.org/wiki/Special:Filepath/${value}" alt="${key}"></label>`;
+			return `<label id="infobox_image_${num}" for="infobox_img${num}"><input id="infobox_image${num}" type="radio" name="infobox_image" ${checked}><img name="infobox_image" onerror="app.notFoundFn(this, ${num})" src="http://commons.wikimedia.org/wiki/Special:Filepath/${value}" alt="${key}"></label>`;
 		},
 		threadTpl : function(prop, data, img) {
 			img = typeof img != "undefined" ? `<div class="image">${img}</div>` : "";
@@ -654,21 +668,26 @@
                 meta = "",
 			parent = typeof data.parent != "undefined" ? `<input name="parent" type="hidden" value="${data.parent}">` : "",
 			root = typeof data.root != "undefined" ? `<input name="root" type="hidden" value="${data.root}">` : "",
-			setting = data.email == localStorage.email ? `<a class="setting" onclick="forum.modifyFn('${prop}')" name="modify">modify</a><a class="setting" onclick="forum.deleteRest('${tag}', '${prop}')" name="remove">remove</a>` : "";
+			setting = data.email == localStorage.email ? `<a class="setting" onclick="app.modifyFn('${prop}')" name="modify">modify</a><a class="setting" onclick="app.deleteRest('${tag}', '${prop}')" name="remove">remove</a>` : "";
 			if(typeof data.url != "undefined"){
 				var len = data.url.length;
 				if(len > 0){
 					for(var i = 0; len > i; i++){
-						var tpl = data.img[i] ? forum.oembedTpl(data.url[i], data.img[i], prop) : `a class="link" href="http://${data.url[i]}" target="_blank" title="new window">#link${(i + 1)}</a>`;
+						var tpl = "";
+						if(typeof data.img != "undefined"){
+							tpl = app.oembedTpl(data.url[i], data.img[i], prop)
+						}else{
+							tpl = `<a class="link" href="http://${data.url[i]}" target="_blank" title="new window">#link${(i + 1)}</a>`;
+						}
 						typeof tpl != "undefined" ? meta += tpl : "";
 					}
 				}
 			}
-			return `${meta}<input id="switch${prop}" name="switch" type="radio" data-mode="post" data-request="" data-url="" data-img=""> <form action="javascript:this.replyFn('${prop}')" id="${prop}" name="thread"><input type="hidden" name="lang" value="${data.lang}"><div class="info"><div class="infobox"><a href="/${tag}/${data.email}" name="profile" style="background-image:url(${data.profile})">${data.name}</a><a name="date">${this.dateFormatFn(data.date)}</a>${setting}<a class="close" onclick="window.forum.closeFn()"><i class="alt">close</i></a></div></div><label for="switch${prop}" name="content">${data.content}</label><div id="reply${prop}" title="${this.lang.title.reply}" class="reply" contenteditable onkeyup="window.forum.oembedFn(this)" onkeydown="forum.replyFn(event, this, '${prop}')"></div>${parent}${root}${img}</form>`;
+			return `${meta}<input id="switch${prop}" name="switch" type="radio" data-mode="post" data-request="" data-url="" data-img=""> <form action="javascript:this.replyFn('${prop}')" id="${prop}" name="thread"><input type="hidden" name="lang" value="${data.lang}"><div class="info"><div class="infobox"><a href="/${tag}/${data.email}" name="profile" style="background-image:url(${data.profile})">${data.name}</a><a name="date">${this.dateFormatFn(data.date)}</a>${setting}<a class="close" onclick="window.app.closeFn()"><i class="alt">close</i></a></div></div><label for="switch${prop}" name="content">${data.content}</label><div id="reply${prop}" title="${this.lang.title.reply}" class="reply" contenteditable onkeyup="window.app.oembedFn(this)" onkeydown="app.replyFn(event, this, '${prop}')"></div>${parent}${root}${img}</form>`;
 		},
 		threadsTpl : function(json, key, tag, img) {
 			var thread_key = typeof json[key].root != "undefined" ? json[key].root + "#" + key : key;
-			return `<form name="threads" ${(typeof json[key].root == "undefined" ? "class='root'" : "")} action="javascript:fetchRecord(this)"><input name="root" type="hidden" value="${json[key].root}"><input name="parent" type="hidden" value="${json[key].parent}"><input name="date" type="hidden" value="${json[key].date}">${img}<div id="content${key}" class="content"><div class="info"><a class="profile" href="/${tag}/${json[key].email}" onclick="forum.pathFn(this, event)"><img class="profile_img" alt="${json[key].name}" src="${json[key].profile}"><span class="name">${json[key].name}</span></a><span class="date">${this.dateFormatFn(json[key].date)}</span></div><a class="txt" href="/${tag}/${thread_key}" onclick="forum.pathFn(this, event)" contenteditable="false">${json[key].content}</a></div></form>`;
+			return `<form name="threads" ${(typeof json[key].root == "undefined" ? "class='root'" : "")} action="javascript:fetchRecord(this)"><input name="root" type="hidden" value="${json[key].root}"><input name="parent" type="hidden" value="${json[key].parent}"><input name="date" type="hidden" value="${json[key].date}">${img}<div id="content${key}" class="content"><div class="info"><a class="profile" href="/${tag}/${json[key].email}" onclick="app.pathFn(this, event)"><img class="profile_img" alt="${json[key].name}" src="${json[key].profile}"><span class="name">${json[key].name}</span></a><span class="date">${this.dateFormatFn(json[key].date)}</span></div><a class="txt" href="/${tag}/${thread_key}" onclick="app.pathFn(this, event)" contenteditable="false">${json[key].content}</a></div></form>`;
 		},
 		thread_mediaTpl : function(json, key, num) {
 			return `<a class="thumnail" id="media${key}"><img src="${json[key].img[num]}" alt="thumnail"></a>`;
@@ -680,10 +699,12 @@
 		gameCallback : function(json) {
 			var body = "",
 				entry = json.feed.entry,
-				category = json.feed.title.$t;
+				category = json.feed.title.$t.toString();
 
 			if(typeof entry != "undefined"){
 				var games = dom.getElementById("games");
+				var g = entry[0].content.$t.split(",");
+				var d = eval("{"+g[6]+"}");
 				for (var i = 0;  i <= entry.length; i++) {
 					if(typeof entry[i] != "undefined"){
 						var game = entry[i].content.$t,
@@ -700,18 +721,23 @@
 						win = away_score < home_score ? "home" : "away",
 						img = typeof youtube != "undefined" ? `style="background-image:url(https://i.ytimg.com/vi/${youtube}/hqdefault.jpg)"` : "";
 
-						body += forum.gameTpl(category, game, league, home, home_score, home_country, away, away_score, away_country, date, youtube, win, img);
+						body += app.gameTpl(category, game, league, home, home_score, home_country, away, away_score, away_country, date, youtube, win, img);
 					}
 				}
+				localStorage[category+d] = JSON.stringify(json);
 				var el = document.getElementsByName("game")[0];
-				if(el && this.currentScrollFn() == 0){						
+				if(el && this.currentScrollFn() == 0){					
 					el.outerHTML = body + el.outerHTML;
 				}else{
 					games.innerHTML += body;
 				}
-				this.scrollInit(1);
-				this.loadingFn(0);
+				if(this.gameCallback.len == 0){
+					this.scrollInit(1);
+					this.loadingFn(0);		
+				}
+				this.gameCallback.len--;
 			}
+			
 		},
 		newsCallback : function(json) {
 			var body = "";
@@ -721,7 +747,7 @@
 					var pageid = list[i].pageid,
 						title = list[i].title;
 					if(body.indexOf(title) < 0){
-						body += forum.newsTpl(pageid, title);
+						body += app.newsTpl(pageid, title);
 					}
 				}
 				this.newsElement.innerHTML = `<ul class="news">${body}</ul>`;
@@ -742,7 +768,7 @@
 				value = value.replace(/_/gi, " ");
 				if(json[i].k.value.indexOf("http://dbpedia.org/ontology/wikiPageWikiLink") >= 0)
 					if(value.indexOf(".svg") >= 0 || value.indexOf(".jpg") >= 0 || value.indexOf(".JPG") >= 0 || value.indexOf(".png") >= 0 || value.indexOf(".PNG") >= 0 || value.indexOf(".SVG") >= 0){
-						images += forum.infobox_imageTpl(key, value.replace("파일:",""), i);
+						images += app.infobox_imageTpl(key, value.replace("파일:",""), i);
 					}else if(json[i].k.value.indexOf("wikiPageWikiLink") >= 0){
 						keywords += `<a href="/${value}">${value}</a>`;
 					}
@@ -755,7 +781,7 @@
 					}else if(value == this.tagElement.textContent){
 							dl += `<dt>${key}</dt><dd><a target="_blank" id="domain_uri">${value}</a></dd>`;
 					}else if(value.indexOf(".svg") >= 0 || value.indexOf(".jpg") >= 0 || value.indexOf(".JPG") >= 0 || value.indexOf(".png") >= 0 || value.indexOf(".PNG") >= 0 || value.indexOf(".SVG") >= 0){
-							infobox_image != "" ? infobox_image += forum.infobox_imageTpl(key, value, i) : infobox_image += forum.infobox_imageTpl(key, value, i, "checked");
+							infobox_image != "" ? infobox_image += app.infobox_imageTpl(key, value, i) : infobox_image += app.infobox_imageTpl(key, value, i, "checked");
 					}else{
 							dl += `<dt>${key}</dt><dd>${value}</dd>`;
 					}
@@ -769,8 +795,12 @@
 			var body = "";
 			var keyword = this.tagElement.textContent;
 			if(json.length){
+				var tag = "#"+json[0];
+				var keywords = typeof localStorage[tag] != "undefined" ? localStorage[tag] : "";
+				localStorage[tag] = JSON.stringify(json);
+
 				for(var i = 0, len = json[1].length; i < len; i++){
-					body += forum.autocompleteTpl(keyword, json, i);
+					body += app.autocompleteTpl(keyword, json, i);
 				}
 				this.shortcutElement.innerHTML = `<div class="autocomplete">${body}</div>`;
 			}else{
@@ -786,7 +816,7 @@
 					data = eval(`({'${key}' : ${this.firebaseCallback.data}})`);
 				if(typeof data.img != "undefined")
 					for(var g = 0, len2 = data.img.length-1; g <= len2; g++){
-						img += forum.thread_mediaTpl(json, key, g);
+						img += app.thread_mediaTpl(json, key, g);
 					}
 				if(dom.body.className == "thread"){
 					var forms = this.threadElement.innerHTML,
@@ -794,11 +824,11 @@
 						id = radio.id.replace("switch", ""),
 						el = dom.getElementById(id);
 					radio.checked = false;
-					tpl = forum.threadTpl(key, data[key], img);
+					tpl = app.threadTpl(key, data[key], img);
 					el ? el.outerHTML += tpl : this.threadElement.innerHTML = tpl;
 				}else{
 					var el = dom.getElementsByName("threads")[0];
-					tpl = forum.threadsTpl(data, key, tag, img);
+					tpl = app.threadsTpl(data, key, tag, img);
 					el ? el.outerHTML = tpl+el.outerHTML : this.threadsElement.innerHTML = tpl;
 				}
 				this.formElement.content.value = "";
@@ -843,9 +873,9 @@
 						content = "";
 					if(typeof json[key].img != "undefined")
 						for(var g = 0, len2 = json[key].img.length-1; g <= len2; g++){
-							img += forum.thread_mediaTpl(json, key, g);
+							img += app.thread_mediaTpl(json, key, g);
 						}
-					body += forum.threadsTpl(json, key, tag, img);
+					body += app.threadsTpl(json, key, tag, img);
 				}
 				console.log(parameters);
 				if(el && this.currentScrollFn() == 0){
@@ -889,20 +919,20 @@
 					content = "";
 				if(typeof json[key].img != "undefined"){
 					for(var g = 0, len2 = json[key].img.length-1; g <= len2; g++){
-						img += forum.thread_mediaTpl(json, key, g);
+						img += app.thread_mediaTpl(json, key, g);
 					}
 				}
 				if(typeof json[key].parent != "undefined"){
-					dom.getElementById(json[key].parent).outerHTML += forum.threadTpl(key, json[key], img);
+					dom.getElementById(json[key].parent).outerHTML += app.threadTpl(key, json[key], img);
 				}else{
-					this.threadElement.innerHTML += forum.threadTpl(key, json[key], img);			
+					this.threadElement.innerHTML += app.threadTpl(key, json[key], img);			
 				}
 			}
 		},
 		oembedCallback : function(json) {
-			forum.jsonpElement.innerHTML += json.html;
+			app.jsonpElement.innerHTML += json.html;
 			var radio = dom.querySelector("[name='switch']:checked"),
-				iframe = forum.jsonpElement.getElementsByTagName("iframe");
+				iframe = app.jsonpElement.getElementsByTagName("iframe");
 			radio.dataset.url += iframe[0].src+",";
 			radio.dataset.img += json.thumbnail_url+",";
 			iframe[0].remove();	
@@ -937,6 +967,6 @@
 	lang = (type=="Netscape") ? navigator.language : lang = navigator.userLanguage;
 	dom.documentElement.lang = lang = lang.substr(0,2);
 
-	forum.jsonpFn(`/lang/${lang}.js`);
+	app.jsonpFn(`/lang/${lang}.js`);
 
 })(window, document);

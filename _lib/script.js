@@ -92,7 +92,7 @@
 							template : dom.getElementById("signOutTpl").innerHTML,
 							data : {lang : this.lang},
 							target : forum.metaElement,
-							css : "/_/top.css"
+							css : "/_lib/top.css"
 						});
 					} else {
 						Scv({
@@ -100,7 +100,7 @@
 							template : dom.getElementById("signInTpl").innerHTML,
 							data : {lang : this.lang},
 							target : forum.metaElement,
-							css : "/_/top.css"
+							css : "/_lib/top.css"
 						});
 					}
 				});
@@ -1041,14 +1041,14 @@
 		id : "autocomplete",
 		template : dom.getElementById("autocompleteTpl").innerHTML,
 		target : forum.autocompleteElement,
-		css : "/_/autocomplete.css"
+		css : "/_lib/autocomplete.css"
 	});
 
 	Scv({
 		id : "thread",
 		template : dom.getElementById("threadTpl").innerHTML,
 		target : forum.threadElement,
-		css : "/_/thread.css",
+		css : "/_lib/thread.css",
 		events : { 
 			oembed: oembedFn
 		}
@@ -1058,21 +1058,21 @@
 		id : "threads",
 		template : dom.getElementById("threadsTpl").innerHTML,
 		target : forum.threadsElement,
-		css : "/_/threads.css"
+		css : "/_lib/threads.css"
 	});
 
 	Scv({
 		id : "game",
 		template : dom.getElementById("gamesTpl").innerHTML,
 		target : forum.threadsElement,
-		css : "/_/game.css"
+		css : "/_lib/game.css"
 	});
 
 	Scv({
 		id : "news",
 		template : dom.getElementById("newsTpl").innerHTML,
 		target : forum.threadsElement,
-		css : "/_/news.css"
+		css : "/_lib/news.css"
 	});
 
 	forum.jsonpFn("/lang/" + lang + ".js");

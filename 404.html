@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
-		<link rel="stylesheet" href="/_/style.css">
+		<link rel="stylesheet" href="/_lib/style.css">
 		<title>forum.red</title>
 	</head>
 	<body>
@@ -19,6 +19,7 @@
 						<label for="switch"></label>
 						<strong><i class="placeholder"></i></strong>
 						<div id="txtarea"></div>
+						<select id="datalist"></select>
 					</div>
 					<div id="autocomplete"></div>
 					<div onclick="window.forum.autocompleteCallback(0)" class="dim"></div>
@@ -54,6 +55,10 @@
 		<script id="autocompleteTpl" type="text/template">
 			<input onfocus="forum.autocompleteFocusFn(this.value)" onkeydown="forum.keywordFocusFn(event)" id="keyword{ this.index }" type="radio" name="keyword" value="{ this.text }">
 			<label for="keyword{ this.index }"><a href="/{ this.href }" onclick="forum.pathFn(this,event)">{ this.keyword }</a></label>
+		</script>
+		
+		<script id="optionTpl" type="text/template">
+			<option>{ this.keyword }</option>
 		</script>
 
 		<script id="gamesTpl" type="text/template">
@@ -139,26 +144,29 @@
 		</script>
 
 		<script id="signOutTpl" type="text/template">
-			<select name="nav" id="nav" onchange="window.forum.navFn(this.value)">
-				<option value="default">&mldr;</option>
-				<option class="signin" value="Google">Google</option>
-				<option class="signin" value="Facebook">Facebook</option>
-				<option class="signin" value="Twitter">Twitter</option>
-				<option class="signin" value="Github">Github</option>
-				<option class="signout" value="">signout</option>
-			</select>
+			<div class="{ this.lang }">
+				<h1><a href="/">forum</a></h1>
+				<select name="nav" id="nav" onchange="window.forum.navFn(this.value)">
+					<option value=""></option>
+					<option value="signOut">signOut</option>
+				</select>
+			</div>
 		</script>
 
 		<script id="signInTpl" type="text/template">
-			<select name="nav" id="nav" onchange="window.forum.navFn(this.value)">
-				<option value="Google">Google</option>
-				<option value="Facebook">Facebook</option>
-				<option value="Twitter">Twitter</option>
-				<option value="Github">Github</option>
-			</select>
+			<div class="{ this.lang }">
+				<h1><a href="/">forum</a></h1>
+				<select name="nav" id="nav" onchange="window.forum.navFn(this.value)">
+					<option value="">로그인</option>
+					<option value="Google">Google</option>
+					<option value="Facebook">Facebook</option>
+					<option value="Twitter">Twitter</option>
+					<option value="Github">Github</option>
+				</select>
+			</div>
 		</script>
 	
-		<script src="/_/scv.js"></script>
-		<script src="/_/script.js"></script>
+		<script src="/_lib/scv.js"></script>
+		<script src="/_lib/script.js"></script>
 	</body>
 </html>

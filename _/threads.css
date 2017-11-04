@@ -1,0 +1,34 @@
+:root{display:none;}
+:root:first-of-type a[name='quarter']{margin-top:0;}
+:root form{position: relative; overflow:hidden; margin-bottom: 10px; background: #fff; box-shadow: 0px 0px 4px rgba(30, 30, 30, 0.2);}
+:root [id*='url']{overflow:hidden; margin-top: 5px;}
+:root img{display: block; width:100%;}
+:root .thumnail{position: absolute; left: 0; top: -140%; width:100%; z-index: 0; cursor: pointer;}
+:root .thumnail img{min-width: 580px;}
+:root iframe{display: none; margin-bottom: 10px; width:100%;}
+:root input{display: none;}
+:root .info{position: relative; display: inline-block; min-width: 100px; padding: 10px; z-index: 1;}
+:root .info .profile_img{float: left; width: 36px; height: 36px;}
+
+:root .profile .name{margin-left: 10px; line-height:20px;}
+:root .date{display: table-caption; margin-left: 10px; font-size:12px; white-space: nowrap;}
+:root .content{position: relative; line-height: 1; z-index:0;}
+:root .txt{display: block; padding: 10px; padding-top: 0; font-size: 14px; line-height: 18px;}
+:root .txt:before{content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 0;}
+:root .thumnail+.content{background-color: rgba(0,0,0,0.5);}
+:root .thumnail+.content *{color: #fff;}
+:root .name{font-size: 14px;}
+:root input:checked~label{display:block;}
+:root input:checked~label img{display: none;}
+:root input:checked~iframe{display:block;}
+
+:root a[name='quarter']{display:none; width: 90px; margin: 20px auto; text-align: center; font-size: 12px; line-height: 1; color:#ddd;}
+:root a[name='quarter']:hover{color:#666;}
+:root a[name='quarter']:before,
+:root a[name='quarter']:after{content:"-"; margin:0 5px;}
+
+:root a[name='quarter'].on{display:block;}
+
+
+
+

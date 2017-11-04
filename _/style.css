@@ -1,0 +1,59 @@
+* {margin: 0; padding: 0; border: 0; font-family: arial; font-size: 18px; line-height: 18px; list-style: none; text-decoration: none; color: #000;}
+.alt{text-indent: -9999px; font-size: 1px;}
+body{overflow-x: hidden; overflow-y: scroll; margin-bottom: 30px; background-color:#eee;}
+
+#header > form[name='form'] {position: relative; padding:0; background-color:#fff;}
+#header > form[name='form'] > fieldset > #util{position: relative; display: table; width: 100%; height: 57px; box-shadow: rgba(30, 30, 30, 0.2) 0px 0px 4px; z-index: 3;}
+#header > form[name='form'] > fieldset > #util > textarea{display: none;}
+#header > form[name='form'] > fieldset > #util > label[for='switch'] {display: table-cell; margin:1em 0; width: 100%; vertical-align: middle;}
+#header > form[name='form'] > fieldset > #util > label#tag:not(:empty) {display: table-cell; width:65px; min-width:65px; padding-right: 0.5em;}
+#header > form[name='form'] > fieldset > #util > label#tag:not(:empty):after {content: ""; position: absolute;left: 0; bottom: 0; width: 100%;}
+#header > form[name='form'] > fieldset > #util > label#tag:not(:empty) ~ label:before {content: "+"; position: relative; cursor: pointer; color: #f00;}
+#header > input[name='switch'] {display: none;}
+#header > input[name='switch']:checked + form[name='form'] > fieldset > #util > label#tag:not(:empty)~label{width:4px;}
+#header > input[name='switch']:checked + form[name='form'] > fieldset > #util > label#tag:not(:empty) ~ label:before {content: "-"; top:-2px; }
+#header > input[name='switch']:checked + form[name='form'] > fieldset > #util > label#tag:not(:empty) ~ #txtarea {display: table-cell;}
+#header > form[name='form'] > fieldset > #util > #tag {position: relative; overflow: hidden; display: table-cell; padding: 1em 0 1em 0.5em; font-weight: bold; width: 100%; line-height: 20px; white-space: nowrap; vertical-align: top; cursor:text;}
+#header > form[name='form'] > fieldset > #util > #tag br{display: none;}
+#header > form[name='form'] > fieldset > #util > #tag *{display: inline;}
+#header > form[name='form'] > fieldset > #util > #tag:empty:focus~strong{opacity: 0.4; z-index: -1;}
+#header > form[name='form'] > fieldset > #util > #tag:empty~strong {display: block;}
+#header > form[name='form'] > fieldset > #util > #tag:empty~strong h1{display: inline;}
+#txtarea {display: none;  width: 100%;}
+#txtarea input[name='content']{padding: 1em 1.5em 1em 0.5em; font-weight: 100; vertical-align: top; line-height: 20px; width:100%; background-color: rgba(0,0,0,0); box-sizing: border-box;}
+#txtarea input[name='content']:focus{background-color: rgba(0,0,0,0);}
+#header > form[name='form'] > fieldset > #util > input[name='keyword'] {position: absolute; width: 0; height: 0; opacity: 0;}
+#header > form[name='form'] > fieldset > #util > strong {display: none; position: absolute; margin: auto; top: 0; bottom: 0; left: 7px; height: 1em; font-size: 24px; z-index: -1;}
+#header > form[name='form'] > fieldset > #util > strong > .placeholder {white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: normal; font-style: normal; font-size: 1rem; line-height: 24px;}
+#header > form[name='form'] > fieldset > #util > select::-ms-expand {display: none;}
+#datalist{position: absolute; margin: auto; padding-left:0.5em; padding-right:0.5em; right: 0; top: 0; font-size:0; width: 30px; height: 100%; background: #fff url(data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAJBAMAAAAWSsseAAAAA3NCSVQICAjb4U/gAAAAIVBMVEX///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADdcGRXAAAAC3RSTlMAESJEZoiZu93u/zzq3gcAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAedEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzUuMasfSOsAAAAWdEVYdENyZWF0aW9uIFRpbWUAMDgvMDYvMTOIS5YgAAAAOElEQVQImWPQWgUECgysQHIpAwPjrFWrJjIwMHitWuUApNhXLQeSDMyrFoMohqwEMKWhAKaYgBgAUGMNtX5Rr70AAAAASUVORK5CYII=) no-repeat center; z-index: 1; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-size:7px; box-sizing:border-box;}
+#datalist:focus{ font-size:1rem; width:100%; background-size:0;}
+
+#datalist:-ms-expand { display: none; }
+
+body.loading > #main{background: url(/img/load.gif) no-repeat bottom center;}
+
+.scroll{overflow: hidden; height: 62px; box-shadow: 0px 0px 4px rgba(30, 30, 30, 0.2);}
+body > #main > body > #main > #thread .media img:empty{margin-bottom: 0 !important;}
+body > #main {padding:20px 0 40px;}
+body > #main>div+div{margin-top: 10px;}
+
+txtarea{display:block;}
+.typing #autocomplete{position: absolute; overflow: hidden; display: block; white-space: inherit; padding: 10px; top: 57px; left: 0; width: 100%; max-width:inherit; box-sizing: border-box; background-color: rgba(238, 238, 238, 0.9); z-index: 2;}
+.typing #autocomplete:empty + .dim {display: none;}
+.typing #autocomplete:empty{padding: 0;}
+#autocomplete:empty {margin-bottom: 0; height: 0; padding:0;}
+#autocomplete {display:none; overflow-x: scroll; overflow-y: hidden; padding-top:10px; max-width:520px; white-space: nowrap; background-color:#eee;}
+#thread{position: relative; font-size: 0; word-break: break-all;}
+
+
+/* lang */ [lang='ko'] #thread form .reply:empty:before{content: "내용을 입력해주세요"; position: relative; z-index: -1;}
+#footer, form[name='form'], #aside, #main {margin: auto; padding: 0 10px; width: 100%; max-width: 520px; line-height:1; font-size:0; box-sizing: border-box;}
+.news>div{overflow:hidden; overflow-x: scroll; white-space: nowrap; font-size: 0;}
+.threads game,  .threads news, #aside, body[class*="thread"] .news, body[class*="thread"] .games, body.thread #threads{display: none;}
+.thread thread, .threads main .threads, .threads #autocomplete, .threads threads, body[class="news"] .news,
+body[class="games"] .games{display: block;}
+@media (max-width: 420px) {.gist .gist-meta a{font-size:12px}}
+
+
+#thread_none{display: block; padding-top: 20px; font-size: 20px; text-align: center;}

@@ -1,0 +1,19 @@
+:root {display: inline;}
+:root * { font-size: 13px; vertical-align: top; color: #006621;}
+:root +:root{margin-left: 2em;}
+:root input{display: none;}
+:root label{color: #ddd;}
+
+.typing :root{display: block;}
+.typing :root+:root{margin-left: 0;}
+.typing :root *{font-size: 18px; color: #000;}
+.typing :root > input {display: block; position: absolute; width: 0; height: 0; opacity: 0; white-space: nowrap;}
+.typing :root > label > a:hover,
+.typing :root > label > a:hover > span,
+.typing :root > label > a:focus,
+.typing :root > label > a:focus > span,
+.typing :root > input:checked + label > a,
+.typing :root > input:checked + label > a > span {color: #f00;}
+.typing :root > label {display: block;}
+.typing :root > label > a{display:block; white-space: nowrap; text-overflow: ellipsis; overflow:hidden; line-height: 1.5;}
+.typing :root > label > a > span {font-weight: bolder; vertical-align: baseline;}

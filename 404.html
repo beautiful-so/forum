@@ -4,60 +4,161 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
-		<link rel="stylesheet" href="/style.css">
+		<link rel="stylesheet" href="/_/style.css">
 		<title>forum.red</title>
 	</head>
 	<body>
-		<header id="header">
+		<div id="header">
+			<div id="meta"></div>
 			<input type="radio" name="switch" id="switch" data-mode="post" data-request="" data-url="" data-img="">
-			<form name="form" action="javascript:app.utilFn()">
+			<form name="form" action="javascript:forum.utilFn()">
 				<fieldset>
 					<div id="util">
-						<input type="radio" onkeydown="window.app.keywordFocusFn(event)" name="keyword">
-						<label id="tag" onkeyup="window.app.keywordFocusFn(event)" onclick="" contenteditable></label>
+						<input type="radio" onkeydown="window.forum.keywordFocusFn(event)" name="keyword" value="">
+						<label id="tag" onkeyup="window.forum.keywordFocusFn(event)" onclick="" contenteditable></label>
 						<label for="switch"></label>
 						<strong><i class="placeholder"></i></strong>
-						<input name="content" type="text" maxlength="150" onkeyup="window.app.oembedFn(this)" placeholder="" shortcut="off" list="keep" required><datalist id="keep"></datalist>
-						<select name="nav" id="nav" onchange="window.app.navFn(this.value)">
-							<option value="default">&mldr;</option>
-							<option class="signin" value="Google">Google</option>
-							<option class="signin" value="Facebook">Facebook</option>
-							<option class="signin" value="Twitter">Twitter</option>
-							<option class="signin" value="Github">Github</option>
-							<option class="signout" value="">signout</option>
-						</select>
+						<div id="txtarea"></div>
 					</div>
-					<div id="shortcut" onfocusout=""></div>
-					<div onclick="window.app.autocompleteCallback(0)" class="dim"></div>
+					<div id="autocomplete"></div>
+					<div onclick="window.forum.autocompleteCallback(0)" class="dim"></div>
 				</fieldset>
 			</form>
-		</header>
-		<aside id="aside">
-			<input type="checkbox" id="more_images">
-			<div id="keywords"></div>
-			<div id="infobox"></div>
-			<div id="filter"></div>
-		</aside>
-		<main id="main">
-			<section id="news"></section>
-			<section id="games"></section>
-			<section id="threads"></section>
-			<section id="thread" class="post"></section>
-		</main>
-		<footer></footer>
+		</div>
+		<div id="aside">
+			<div class="keywords">
+				<div id="keywords"></div>
+			</div>
+		</div>
+		<div id="main">
+			<div id="threads"></div>
+			<div id="thread" class="post"></div>
+		</div>
+		<div id="footer"></div>
 		<div id="jsonp"></div>
-		<script>
-			(function(dom) {
-				var script = dom.createElement("script"),
-					cache = typeof localStorage.code != "undefined",
-					support = typeof String.raw != "undefined";
-				if(support){
-					cache ? script.text = localStorage.code : script.src = "/es6.js";
-				}else{
-					script.src = "/es5.js";
-				}
-				dom.body.appendChild(script);
-			})(document);
+
+
+		<script id="newsTpl" type="text/template">
+			<a href="/news" onclick="forum.pathFn(this, event)" class="shortcut"></a>
+			<a href="https://{ this.lang }.wikinews.org/wiki/{ this.title }?dpl_id={ this.pageid }" target="_blank" title="new window">{ this.title }</a>
 		</script>
+
+		<script id="oembedTpl" type="text/template">
+			<a class="media {this.key}" id="media{ this.id}"><img src="{ this.img }" alt="" onclick="window.forum.defaultOembed('{ this.id }', '{ this.url }')"></a>
+		</script>
+
+		<script id="youtubeTpl" type="text/template">
+			<a class="media" id="media{this.id}" onclick="window.forum.youtubeOembed('{ this.id }')"><img src="https://i.ytimg.com/vi/{ this.id }/hqdefault.jpg" alt="youtube"></a>
+		</script>
+
+		<script id="autocompleteTpl" type="text/template">
+			<input onfocus="forum.autocompleteFocusFn(this.value)" onkeydown="forum.keywordFocusFn(event)" id="keyword{ this.index }" type="radio" name="keyword" value="{ this.text }">
+			<label for="keyword{ this.index }"><a href="/{ this.href }" onclick="forum.pathFn(this,event)">{ this.keyword }</a></label>
+		</script>
+
+		<script id="gamesTpl" type="text/template">
+			<div name="game" class="game { this.win } { this.league } { this.type }" { this.img }>
+				<a href="/{ this.category }" class="shortcut" onclick="forum.pathFn(this, event)"></a>
+				<a href="https://www.youtube.com/results?search_query={ this.href }" target="_blank" title="new window" class="title">
+					<dl class="home">
+						<dt>
+							<strong class="name">{ this.home }</strong>
+							<span class="country">{ this.home_country }</span>
+						</dt>
+						<dd class="score">{ this.home_score }</dd>
+					</dl>
+					<dl class="away">
+						<dt>
+							<strong class="name">{ this.away }</strong>
+							<span class="country">{ this.away_country }</span>
+						</dt>
+						<dd class="score">{ this.away_score }</dd>
+					</dl>
+				</a>
+				<input type="hidden" name="date" value="{ this.timestamp }">
+			</div>
+		</script>
+		
+		<script id="txtareaTpl" type="text/template">
+			<input name="content" type="text" maxlength="150" @keyup="oembed" placeholder="" shortcut="off" required value="{ this.txt }">
+		</script>	
+
+		<script id="threadTpl" type="text/template">
+			{ this.meta }
+			<input id="switch{ this.prop }" name="switch" type="radio" data-mode="post" data-request="" data-url="" data-img="">
+			<form action="javascript:this.replyFn('{ this.prop }')" id="{ this.prop }" name="thread">
+				<input type="hidden" name="lang" value="{ this.lang }">
+				<div class="info">
+					<div class="infobox">
+						<a href="/{ this.tag }/{ this.email }" name="profile" style="background-image:url({ this.profile })">{ this.name }</a><a name="date">{ this.date }</a>
+						{ this.setting }
+						<a class="close" onclick="window.forum.closeFn()">
+							<i class="alt">close</i>
+						</a>
+					</div>
+				</div>
+				<label for="switch{ this.prop }" name="content">{ this.content }</label>
+				<div id="reply{ this.prop }" title="{ this.reply }" class="reply" contenteditable onkeyup="window.forum.oembedFn(this)" onkeydown="forum.replyFn(event, this, '{ this.prop }')"></div>
+				{ this.parent }
+				{ this.root }
+				{ this.img }
+			</form>
+		</script>
+
+		<script id="threadsTpl" type="text/template">
+			<a name="quarter" class="{ this.pager }" data-date="this.timestamp">{ this.date }</a>
+			<form name="threads" class="{ this.class }" action="javascript:fetchRecord(this)">
+				<input name="root" type="hidden" value="{ this.root }">
+				<input name="parent" type="hidden" value="{ this.parent }">
+				<input name="date" type="hidden" value="{ this.timestamp }">
+				{ this.img }
+				<div id="content{ this.key }" class="content">
+					<div class="info">
+						<a class="profile" href="/{ this.tag }/{ this.email }" onclick="forum.pathFn(this, event)">
+							<img class="profile_img" alt="{ this.name }" src="{ this.profile }">
+							<span class="name">{ this.name }</span>
+						</a>
+						<span class="date">{ this.date }</span>
+					</div>
+					<a class="txt" href="/{ this.tag }/{ this.thread_key }" onclick="forum.pathFn(this, event)" contenteditable="false">{ this.content }</a>
+				</div>
+			</form>
+		</script>
+
+		<script id="thread_mediaTpl" type="text/template">
+			"<a class="thumnail" id="media" + key + ""><img src="" + json[key].img[num] + "" alt="thumnail"></a>"
+		</script>
+
+		<script id="bookAutocompleteTpl" type="text/template">
+			<input onfocus="app.autocompleteFocusFn(this)" onkeydown="app.keywordFocusFn(event)" id="keyword{ this.index }" type="radio" name="keyword" data-barcode="{ this.barcode }" value="{ this.title }" />
+			<label for="keyword{ this.index }">
+				<a href="/{ this.title }#{ this.barcode }" click="pathFn">
+					<span>{ this.title }</span>
+				</a>
+			</label>
+		</script>
+
+		<script id="signOutTpl" type="text/template">
+			<select name="nav" id="nav" onchange="window.forum.navFn(this.value)">
+				<option value="default">&mldr;</option>
+				<option class="signin" value="Google">Google</option>
+				<option class="signin" value="Facebook">Facebook</option>
+				<option class="signin" value="Twitter">Twitter</option>
+				<option class="signin" value="Github">Github</option>
+				<option class="signout" value="">signout</option>
+			</select>
+		</script>
+
+		<script id="signInTpl" type="text/template">
+			<select name="nav" id="nav" onchange="window.forum.navFn(this.value)">
+				<option value="Google">Google</option>
+				<option value="Facebook">Facebook</option>
+				<option value="Twitter">Twitter</option>
+				<option value="Github">Github</option>
+			</select>
+		</script>
+	
+		<script src="/_/scv.js"></script>
+		<script src="/_/script.js"></script>
 	</body>
 </html>

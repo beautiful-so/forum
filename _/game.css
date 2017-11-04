@@ -1,0 +1,40 @@
+:root{overflow:hidden; overflow-x: scroll; white-space: nowrap;}
+:root>div{display: inline;}
+
+:root{display: block;}
+:root .football .basketball,
+:root .football .baseball,
+:root .basketball .football,
+:root .basketball .baseball,
+:root .baseball .football,
+:root .baseball .basketball{display: none}
+:root {position: relative; overflow:hidden; margin-bottom: 5px; height:62px; font-size:0; box-sizing: border-box; background-repeat: no-repeat; background-position: center; background-size: 100% auto;}
+:root  .title{display: block; padding:5px; padding-left: 60px; box-sizing:border-box;}
+:root  .title[href]{cursor: pointer;}
+:root  .shortcut{position: absolute; left: 0; top: 0; width:50px; height:50px; background: url("/img/logo.gif") no-repeat; opacity: 1; z-index: 1;}
+:root  .title dl{overflow:hidden;}
+:root  .title dl *{display:inline; font-weight: lighter; font-size:12px;}
+:root  .title dl dd{margin:0 5px;}
+:root  .title .country{display: none; margin-left: 5px;}
+:root .home .home *,
+:root .away .away *{font-weight: bold;}
+:root  input{display: none;}
+:root  label{display: block;}
+:root  iframe{position: absolute;left: 0;top: 0;width: 100%;height: 100%;}
+:root .bund .shortcut{background-position: -50px 0;}
+:root .serie_a .shortcut{background-position: -100px 0;}
+:root .la_liga .shortcut{background-position: -150px 0;}
+:root .ligue_1 .shortcut{background-position: -200px 0;}
+:root .liga_mx .shortcut{background-position: -300px 0;}
+:root .spl .shortcut{background-position: -350px 0;}
+:root .tsl .shortcut{background-position: -400px 0;}
+:root .ppl .shortcut{background-position: -500px 0;}
+:root .arge .shortcut{background-position: -550px 0;}
+:root .engch .shortcut{background-position: -600px 0;}
+:root .afc .shortcut{background-position: -650px 0;}
+:root .copa_rey .shortcut{background-position: -650px 0;}
+:root .cwc .shortcut{background-position: -750px 0;}
+:root .europa .shortcut{background-position: -800px 0;}
+:root .bsa .shortcut{background-position: -900px 0;}
+:root .holl .shortcut{background-position: -950px 0;}
+:root .nba .shortcut{background-position: 0 -1000px;}

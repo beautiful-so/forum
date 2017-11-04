@@ -1,5 +1,5 @@
 (function(bom, dom) {
-	window.app.langInit({
+	window.forum.langInit({
 		type : "ko",
 		title : {
 			reply : "답장 내용을 입력해주세요"	
@@ -22,7 +22,7 @@
 	})
 
 	dom.querySelector(".placeholder").innerHTML = "검색어를 입력해주세요";
-	app.routeInit();
-	app.sesstionInit();
-	app.popstate ? bom.onpopstate = function(event) {app.routeInit()} : "";
+	forum.routeInit();
+	forum.sesstionInit();
+	forum.popstate ? bom.onpopstate = function(event) {forum.routeInit()} : "";
 })(window, document);

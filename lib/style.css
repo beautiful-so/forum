@@ -26,8 +26,8 @@ body{overflow-x: hidden; overflow-y: scroll; margin-bottom: 30px; padding: 0 10p
 #header > form[name='form'] > fieldset > #util > strong {display: none; position: absolute; margin: auto; top: 0; bottom: 0; left: 7px; height: 1em; font-size: 24px; z-index: -1;}
 #header > form[name='form'] > fieldset > #util > strong > .placeholder {white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: normal; font-style: normal; font-size: 1rem; line-height: 24px;}
 #header > form[name='form'] > fieldset > #util > select::-ms-expand {display: none;}
-#datalist{position: absolute; margin: auto; padding-left:0.5em; padding-right:0.5em; right: 0; top: 0; font-size:0; width: 30px; height: 100%; background: #fff url(data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAJBAMAAAAWSsseAAAAA3NCSVQICAjb4U/gAAAAIVBMVEX///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADdcGRXAAAAC3RSTlMAESJEZoiZu93u/zzq3gcAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAedEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzUuMasfSOsAAAAWdEVYdENyZWF0aW9uIFRpbWUAMDgvMDYvMTOIS5YgAAAAOElEQVQImWPQWgUECgysQHIpAwPjrFWrJjIwMHitWuUApNhXLQeSDMyrFoMohqwEMKWhAKaYgBgAUGMNtX5Rr70AAAAASUVORK5CYII=) no-repeat center; z-index: 1; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-size:7px; box-sizing:border-box;}
-#datalist:focus{ font-size:1rem; width:100%; background-size:0;}
+#datalist{position: absolute; margin: auto; padding-left:0.5em; padding-right:0.5em; right: 1px; top: 1px; bottom:1px; font-size:0; width: 30px; background: #fff url(data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAJBAMAAAAWSsseAAAAA3NCSVQICAjb4U/gAAAAIVBMVEX///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADdcGRXAAAAC3RSTlMAESJEZoiZu93u/zzq3gcAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAedEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzUuMasfSOsAAAAWdEVYdENyZWF0aW9uIFRpbWUAMDgvMDYvMTOIS5YgAAAAOElEQVQImWPQWgUECgysQHIpAwPjrFWrJjIwMHitWuUApNhXLQeSDMyrFoMohqwEMKWhAKaYgBgAUGMNtX5Rr70AAAAASUVORK5CYII=) no-repeat center; z-index: 1; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-size:7px; box-sizing:border-box;}
+#datalist:focus{ font-size:1rem; width:100%; top:0; bottom:0; right:0; background-size:0;}
 
 #datalist:-ms-expand { display: none; }
 
@@ -42,6 +42,8 @@ txtarea{display:block;}
 .typing #autocomplete{position: absolute; overflow: hidden; display: block; white-space: inherit; padding: 10px; top: 57px; left: 0; width: 100%; max-width:inherit; box-sizing: border-box; background-color: rgba(238, 238, 238, 0.9); z-index: 2;}
 .typing #autocomplete:empty + .dim {display: none;}
 .typing #autocomplete:empty{padding: 0;}
+.typing .dim{display:block;}
+.dim{display:none; position:fixed; top:0; left:0; right:0; bottom:0; top:0;z-index:1;}
 #autocomplete:empty {margin-bottom: 0; height: 0; padding:0;}
 #autocomplete {display:none; overflow-x: scroll; overflow-y: hidden; padding-top:10px; max-width:520px; white-space: nowrap; background-color:#eee;}
 #thread{position: relative; font-size: 0; word-break: break-all;}

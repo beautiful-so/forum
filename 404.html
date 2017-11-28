@@ -9,7 +9,12 @@
 	</head>
 	<body>
 		<div id="header">
-			<div id="meta"></div>
+			<div id="meta">
+				<div>
+					<h1><a href="/">forum</a></h1>
+					<select name="nav" id="nav" onchange="window.forum.authFn(this.value)"></select>
+				</div>
+			</div>
 			<input type="radio" name="switch" id="switch" data-mode="post" data-request="" data-url="" data-img="">
 			<form name="form" action="javascript:forum.utilFn()">
 				<fieldset>
@@ -38,6 +43,9 @@
 		<div id="footer"></div>
 		<div id="jsonp"></div>
 
+		<script id="authTpl" type="text/template">
+			<option valeu="{ this.value }">{ this.value }</option>
+		</script>
 
 		<script id="newsTpl" type="text/template">
 			<a href="/news" onclick="forum.pathFn(this, event)" class="shortcut"></a>
@@ -141,29 +149,6 @@
 					<span>{ this.title }</span>
 				</a>
 			</label>
-		</script>
-
-		<script id="signOutTpl" type="text/template">
-			<div class="{ this.lang }">
-				<h1><a href="/">forum</a></h1>
-				<select name="nav" id="nav" onchange="window.forum.navFn(this.value)">
-					<option value=""></option>
-					<option value="signOut">signOut</option>
-				</select>
-			</div>
-		</script>
-
-		<script id="signInTpl" type="text/template">
-			<div class="{ this.lang }">
-				<h1><a href="/">forum</a></h1>
-				<select name="nav" id="nav" onchange="window.forum.navFn(this.value)">
-					<option value="">로그인</option>
-					<option value="Google">Google</option>
-					<option value="Facebook">Facebook</option>
-					<option value="Twitter">Twitter</option>
-					<option value="Github">Github</option>
-				</select>
-			</div>
 		</script>
 	
 		<script src="/lib/scv.js"></script>
